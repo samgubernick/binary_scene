@@ -106,7 +106,7 @@ bool loadScenes(std::filesystem::path const & path, Scenes & scenes) {
 			std::cout << "Successfully loaded archive" << std::endl;
 			result = true;
 		}
-		catch (std::exception e) {	// why isn't boost::exception catching? Maybe I have to build it?
+		catch (boost::archive::archive_exception e) {
 			std::cerr << "Load exception: " << e.what() << std::endl;
 			std::cerr << "Unknown file format" << std::endl;
 
@@ -148,7 +148,7 @@ bool saveScenes(std::filesystem::path const & path, Scenes const & scenes) {
 			std::cout << "Saving data list" << std::endl;
 			result = true;
 		}
-		catch (std::exception e) {
+		catch (boost::archive::archive_exception e) {
 			std::cerr << "Error: " << e.what() << std::endl;
 			result = false;
 		}
