@@ -196,8 +196,11 @@ void convertScenesText(Scenes & scenes) {
 int main()
 {
 	std::cout << "Hello CMake." << std::endl;
-	auto const FILENAME = std::filesystem::path("../data/scenes.bin");
-
+#ifdef ARCH_X64
+	auto const FILENAME = std::filesystem::path("../data/scenes_x64.bin");
+#elif defined ARCH_X86
+	auto const FILENAME = std::filesystem::path("../data/scenes_x86.bin");
+#endif // ARCH_X64
 	auto scenes = Scenes();
 	convertScenesText(scenes);
 	saveScenes(FILENAME, scenes);
