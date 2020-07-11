@@ -1,4 +1,8 @@
 
+#ifndef SAM_SCENES_HPP_INCLUDED
+#define SAM_SCENES_HPP_INCLUDED
+#pragma once
+
 #include "scene.hpp"
 
 #include "boost/archive/binary_iarchive.hpp"
@@ -16,3 +20,4 @@ private:
 		ar & scenes;
 	}
 };
+#endif // INCLUDE_GUARD

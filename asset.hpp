@@ -1,28 +1,24 @@
 
-#ifndef SAM_SCENE_HPP_INCLUDED
-#define SAM_SCENE_HPP_INCLUDED
+#ifndef SAM_ASSET_HPP_INCLUDED
+#define SAM_ASSET_HPP_INCLUDED
 #pragma once
-
-#include "texture.hpp"
-#include "options.hpp"
 
 #include "boost/archive/binary_iarchive.hpp"
 #include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/vector.hpp"
 
 #include <string>
-#include <vector>
 
-struct Scene {
+struct Asset {
 	std::string name;
-	std::vector<Texture> textures;
+	std::string path;
 
-	Scene() {
+	Asset() {
 
 	}
 
-	Scene(std::string name)
-		: name(name) {
+	Asset(std::string name, std::string path)
+		: name(name)
+		, path(path) {
 
 	}
 
@@ -31,7 +27,7 @@ private:
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & name;
-		ar & textures;
+		ar & path;
 	}
 };
 #endif // INCLUDE_GUARD

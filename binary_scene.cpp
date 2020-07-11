@@ -8,6 +8,89 @@
 
 namespace {
 	constexpr auto const MATCH = int{ 0 };
+
+	constexpr auto const KEY_NAME = size_t{ 0 };
+	constexpr auto const KEY_PATH = size_t{ 1 };
+	constexpr auto const KEY_IMAGE_FORMAT = size_t{ 2 };
+	constexpr auto const KEY_BEHAVIOR_X = size_t{ 3 };
+	constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
+}
+
+option::Behavior getBehavior(std::string const & behavior) {
+	//std::cout << "Behavior: (" << behavior << ")" << std::endl;
+	if (behavior.compare("mirror") == MATCH) {
+		return option::Behavior::mirror;
+	} else if (behavior.compare("stretch") == MATCH) {
+		return option::Behavior::stretch;
+	}
+	else if (behavior.compare("repeat") == MATCH) {
+		return option::Behavior::repeat;
+	}
+
+	return option::Behavior::repeat;
+}
+
+option::ImageFormat getImageFormat(std::string & imageFormat) {
+	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
+	if (imageFormat.compare("l") == MATCH) {
+		return option::ImageFormat::l;
+	} else if (imageFormat.compare("a") == MATCH) {
+		return option::ImageFormat::a;
+	}
+	else if (imageFormat.compare("la") == MATCH) {
+		return option::ImageFormat::la;
+	}
+	else if (imageFormat.compare("rgb") == MATCH) {
+		return option::ImageFormat::rgb;
+	}
+	else if (imageFormat.compare("rgba") == MATCH) {
+		return option::ImageFormat::rgba;
+	}
+	else if (imageFormat.compare("srgb") == MATCH) {
+		return option::ImageFormat::srgb;
+	}
+	else if (imageFormat.compare("srgba") == MATCH) {
+		return option::ImageFormat::srgba;
+	}
+
+	return option::ImageFormat::a;
+}
+
+void assignUniqueIndex(Scenes & scenes) {
+	auto id = size_t{ 0 };
+
+	for (auto & s : scenes.scenes) {
+		for (auto & t : s.textures) {
+
+			auto found = false;
+			for (auto & otherS : scenes.scenes) {
+				for (auto & otherT : otherS.textures) {
+					if (&t != &otherT && t.hash.compare(otherT.hash) == MATCH) {
+						found = true;
+						if (otherT.id == 0) {
+							++id;
+							t.id = id;
+							otherT.id = id;
+						}
+						else {
+							t.id = otherT.id;
+						}
+						break;
+					}
+				}
+
+				if (found) {
+					break;
+				}
+			}
+			if (!found) {
+				++id;
+				t.id = id;
+			}
+		}
+	}
+
+	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
 }
 
 bool makeFileDirs(std::filesystem::path const & file) {
@@ -54,34 +137,45 @@ bool loadScenesText(std::filesystem::path const & path, Scenes & scenes) {
 			return false;
 		}
 
-		std::cout << std::endl << "Filename: " << path.filename().string() << "		" << path.string() << std::endl
+		std::cout << "Filename: " << path.filename().string() << "		" << path.string() << std::endl
 			<< "-								-" << std::endl;
 
 		auto const FILENAME = path.filename().string().substr(0, path.filename().string().size() - path.extension().string().size());
 		auto & scene = scenes.scenes.emplace_back(FILENAME);
 		while (std::getline(ifs, line)) {
-			//std::cout << "Line: " << line << std::endl;
+			if (!line.empty()) {
+				auto items = std::vector<std::string>();
+				items.reserve(5);
 
-			auto startOfPath = line.find("	");
-			auto const NAME = line.substr(0, startOfPath);
-			while (true) {
-				auto i = line.find("	", startOfPath);
-				if (startOfPath < i) {
-					startOfPath = i;
+				auto const END = std::end(line);
+				auto current = std::begin(line);
+				auto next = std::find(current, END, '\t');
+				items.push_back(line.substr(0, std::distance(std::begin(line), next)));
+				while (next < END) {
+					current = next + 1;
+					next = std::find(current, END, '\t');
+					items.push_back(line.substr(std::distance(std::begin(line), current), std::distance(current, next)));
 				}
-				else {
-					break;
+
+				if (items.size() == 5) {
+
+					auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
+										   getBehavior(items.at(KEY_BEHAVIOR_Y)),
+										   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+
+					auto & texture = scene.textures.emplace_back(items.at(KEY_NAME),
+																 items.at(KEY_PATH),
+																 std::move(options));
+				}
+				else {	// texture line isn't formatted correctly
+					std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
 				}
 			}
-			++startOfPath;
-			auto const PATH = line.substr(startOfPath, line.size() - startOfPath);
-			std::cout << NAME << "			" <<  PATH << std::endl;
-
-			scene.textures.emplace_back(NAME, PATH);
 		}
 		ifs.close();
 
-		std::cout << std::endl;
+		std::cout << "Scene contains " << scene.textures.size() << " named textures" << std::endl;
+
 		return true;
 	}
 	else {
@@ -191,21 +285,26 @@ void convertScenesText(Scenes & scenes) {
 			std::cout << "Error reading scenes text file" << std::endl;
 		}
 	}
+
+	std::cout << std::endl;
+	assignUniqueIndex(scenes);
 }
 
 int main()
 {
-	std::cout << "Hello CMake." << std::endl;
+	std::cout << "Converting scene textures to binary data" << std::endl;
 #ifdef ARCH_X64
-	auto const FILENAME = std::filesystem::path("../data/scenes_x64.bin");
+	auto const FILENAME = std::filesystem::path("../data_x64/scene/textures.bin");
 #elif defined ARCH_X86
-	auto const FILENAME = std::filesystem::path("../data/scenes_x86.bin");
+	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures.bin");
 #endif // ARCH_X64
 	auto scenes = Scenes();
 	convertScenesText(scenes);
 	saveScenes(FILENAME, scenes);
 
-	auto i = int{ 0 };
-	std::cin >> i;
+	std::cout << std::endl << "Press any key to exit..." << std::endl;
+	for (auto line = std::string(); std::getline(std::cin, line);) {
+		break;
+	}
 	return EXIT_SUCCESS;
 }

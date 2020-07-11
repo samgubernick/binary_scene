@@ -1,21 +1,38 @@
 
+#ifndef SAM_TEXTURE_HPP_INCLUDED
+#define SAM_TEXTURE_HPP_INCLUDED
+#pragma once
+
+#include "options.hpp"
+
 #include "boost/archive/binary_iarchive.hpp"
 #include "boost/archive/binary_oarchive.hpp"
 
 #include <string>
 
 struct Texture {
-	std::string name;
-	std::string path;
+	std::string	name;
+	std::string	path;
+	Options		options;
+	std::string	hash;
+	size_t		id;
 
 	Texture() {
 
 	}
 
-	Texture(std::string name, std::string path)
+	Texture(std::string	name,
+			std::string	path,
+			Options		options)
 		: name(name)
-		, path(path) {
+		, path(path)
+		, options(std::move(options))
+		, id(0) {
 
+		hash = path;
+		hash.append(std::to_string(static_cast<int>(options.imageFormat)))
+			.append(std::to_string(static_cast<int>(options.behaviorX)))
+			.append(std::to_string(static_cast<int>(options.behaviorY)));
 	}
 
 private:
@@ -24,5 +41,9 @@ private:
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & name;
 		ar & path;
+		ar & options;
+		ar & hash;
+		ar & id;
 	}
 };
+#endif // INCLUDE_GUARD

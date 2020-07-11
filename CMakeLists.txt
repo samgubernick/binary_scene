@@ -13,9 +13,10 @@ endif()
 project ("binary_scene")
 
 # Add source to this project's executable.
-add_executable (binary_scene "binary_scene.cpp"  "texture.hpp" "scene.hpp" "scenes.hpp")
+add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp")
 
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/libs")
+
 
 set(BOOST_ROOT ${LIB_DIR}/boost/1_73_0)
 set(BOOST_INCLUDEDIR ${LIB_DIR}/boost/1_73_0/boost)
@@ -23,22 +24,19 @@ set(BOOST_INCLUDEDIR ${LIB_DIR}/boost/1_73_0/boost)
 message(STATUS "Lib path: ${LIB_DIR}")
 
 if(DEFINED ARCH_X64)
-    if(WIN32)
-        message(STATUS "Setting Boost variables for Windows")
-	    set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib)
-	    set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0)
-	    set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0")
-    endif() # WIN32
+    message(STATUS "Setting Boost variables for Windows")
+	set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib)
+	set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0)
+	set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0")
+	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x64/debug/")
 elseif(DEFINED ARCH_X86)
-    if(WIN32)
-        message(STATUS "Setting Boost variables for Windows")
-
-        set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib)
-        set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0)
-        set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0")
-    else()
-        message(STATUS "***Error: No environment selected***")
-    endif() # WIN32
+    message(STATUS "Setting Boost variables for Windows")
+    set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib)
+    set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0)
+    set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0")
+	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x86/debug/")
+else()
+	message(STATUS "***Error: No environment selected***")
 endif() # ARCH
 
 set(Boost_NO_SYSTEM_PATHS ON)
@@ -94,3 +92,15 @@ else()
 endif() # ARCH
 
 target_link_libraries(binary_scene PUBLIC ${Boost_LIBRARIES})
+
+include_directories("${LIB_DIR}/soil2/current/include/")
+
+find_library(
+	soil2
+	NAMES soil2-debug soil2
+	PATHS SOIL2_PATH
+	NO_DEFAULT_PATH
+	NO_CMAKE_ENVIRONMENT_PATH
+	NO_SYSTEM_ENVIRONMENT_PATH
+)
+message(STATUS "SOIL2 path: ${soil2}")
