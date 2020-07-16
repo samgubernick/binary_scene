@@ -228,7 +228,7 @@ void assignUniqueIndex(Scenes & scenes) {
 	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
 }
 
-void addTexture(std::string const & line, Animation & animation, size_t index) {
+void addTexture(std::string const & line, std::vector<Texture> & textures, size_t index) {
 	std::cout << "Adding animation texture (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
 	items.reserve(5);
@@ -249,9 +249,9 @@ void addTexture(std::string const & line, Animation & animation, size_t index) {
 							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
 							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
 
-		auto & texture = animation.textures.emplace_back(items.at(KEY_NAME),
-														 items.at(KEY_PATH),
-														 std::move(options));
+		textures.emplace_back(items.at(KEY_NAME),
+							  items.at(KEY_PATH),
+							  std::move(options));
 
 		std::cout << "Successfully added animation texture" << std::endl;
 	}
@@ -260,11 +260,11 @@ void addTexture(std::string const & line, Animation & animation, size_t index) {
 	}
 }
 
-void addTexture(std::string const & line, Scene & scene) {
+void addTexture(std::string const & line, std::vector<Texture> & textures) {
 	//std::cout << "Texture line (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
 	items.reserve(5);
-	
+
 	auto const END = std::end(line);
 	auto current = std::begin(line);
 	auto next = std::find_if(current, END, isSpacer);
@@ -280,12 +280,89 @@ void addTexture(std::string const & line, Scene & scene) {
 							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
 							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
 
-		auto & texture = scene.textures.emplace_back(items.at(KEY_NAME),
-													 items.at(KEY_PATH),
-													 std::move(options));
+		textures.emplace_back(items.at(KEY_NAME),
+							  items.at(KEY_PATH),
+							  std::move(options));
 	}
 	else {	// texture line isn't formatted correctly
 		std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
+	}
+}
+
+void addAnimationOption(std::string const & line, Animation & animation) {
+	//std::cout << "Adding animation option: (" << line << ")" << std::endl;
+
+	auto const END = std::end(line);
+	auto const BEGIN = std::begin(line);
+
+	auto current = BEGIN;
+	auto next = std::find_if(current, END, isSpacer);
+
+	auto KEY = line.substr(0, std::distance(current, next));
+
+	current = std::find_if(next, END, isValidChar);
+	next = std::find_if(current, END, isSpacer);
+	auto VALUE = line.substr(std::distance(BEGIN, current), std::distance(current, next));
+
+	std::cout << "Adding animation option: (" << KEY << ") = (" << VALUE << ")" << std::endl;
+
+	if (matches(KEY, "do_at_end")) {
+		if (matches(VALUE, "reset")) {
+			animation.endOfAnimation = EndOfAnimation::reset;
+		} else if (matches(VALUE, "reverse")) {
+			animation.endOfAnimation = EndOfAnimation::reverse;
+		} else if (matches(VALUE, "stop")) {
+			animation.endOfAnimation = EndOfAnimation::stop;
+		}
+	}
+	else if (matches(KEY, "speed_default")) {
+		animation.speed_default = std::stod(VALUE);
+	}
+	else if (matches(KEY, "speed_slow")) {
+		animation.speed_slow = std::stod(VALUE);
+	}
+}
+
+void processLineAnimation(std::string const & line, Search & search, Animation & animation, size_t index) {
+	//std::cout << "Line (" << line << ")" << std::endl;
+	auto const BEGIN = std::begin(line);
+	auto const END = std::end(line);
+
+	auto firstCharacter = std::find_if(BEGIN, END, isValidChar);
+	auto lastCharacter = std::find_if(firstCharacter, END, isSpacer);
+
+	switch (search.stage) {
+		case Stage::searchingForEndImage: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>")) {
+				std::cout << "Found </image>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addTexture(line.substr(std::distance(BEGIN, firstCharacter)), animation.textures, index);
+			}
+			break;
+		}
+		case Stage::searchingForEndAnimation: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</options>")) {
+				std::cout << "Found </options>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addAnimationOption(line.substr(std::distance(BEGIN, firstCharacter)), animation);
+			}
+			break;
+		}
+		default: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>")) {
+				std::cout << "Found <image>" << std::endl;
+				search.stage = Stage::searchingForEndImage;
+			}
+			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<options>")) {
+				std::cout << "Found <options>" << std::endl;
+				search.stage = Stage::searchingForEndAnimation;
+			}
+			break;
+		}
 	}
 }
 
@@ -338,12 +415,13 @@ void addAnimation(std::string const & line, std::vector<Sprite> & sprites) {
 			}
 			if (!found) {
 				auto & animation = sprite->animations.emplace_back(ANIMATION_NAME);
-					while (std::getline(ifs, s)) {
-						if (!s.empty()) {
-							++index;
-								addTexture(s, animation, index);
-						}
+				auto search = Search();
+				while (std::getline(ifs, s)) {
+					if (!s.empty()) {
+						++index;
+						processLineAnimation(s, search, animation, index);
 					}
+				}
 			}
 		}
 
@@ -370,7 +448,7 @@ void processLine(std::string const & line, Search & search, Scene & scene) {
 				search.stage = Stage::none;
 			}
 			else {
-				addTexture(line.substr(std::distance(BEGIN, firstCharacter)), scene);
+				addTexture(line.substr(std::distance(BEGIN, firstCharacter)), scene.textures);
 			}
 			break;
 		}
