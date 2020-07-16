@@ -1,10 +1,9 @@
 
-#ifndef SAM_SCENE_HPP_INCLUDED
-#define SAM_SCENE_HPP_INCLUDED
+#ifndef SAM_SPRITE_HPP_INCLUDED
+#define SAM_SPRITE_HPP_INCLUDED
 #pragma once
 
-#include "sprite.hpp"
-#include "texture.hpp"
+#include "animation.hpp"
 
 #include "boost/archive/binary_iarchive.hpp"
 #include "boost/archive/binary_oarchive.hpp"
@@ -13,16 +12,15 @@
 #include <string>
 #include <vector>
 
-struct Scene {
+struct Sprite {
 	std::string name;
-	std::vector<Texture> textures;
-	std::vector<Sprite> sprites;
+	std::vector<Animation> animations;
 
-	Scene() {
+	Sprite() {
 
 	}
 
-	Scene(std::string name)
+	Sprite(std::string name)
 		: name(name) {
 
 	}
@@ -31,9 +29,8 @@ private:
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive & ar, const unsigned int version) {
-		ar & sprites;
 		ar & name;
-		ar & textures;
+		ar & animations;
 	}
 };
 #endif // INCLUDE_GUARD

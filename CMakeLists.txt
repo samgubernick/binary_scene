@@ -5,18 +5,21 @@
 cmake_minimum_required (VERSION 3.8)
 
 if(${CMAKE_EXE_LINKER_FLAGS} STREQUAL /machine:x64)
+	message(STATUS "Using x64")
 	set(ARCH_X64 TRUE)
 elseif(${CMAKE_EXE_LINKER_FLAGS} STREQUAL /machine:X86)
+	message(STATUS "Using x86")
 	set(ARCH_X86 TRUE)
+else()
+	message(STATUS "Unknown linker flags: ${CMAKE_EXE_LINKER_FLAGS}")
 endif()
 
 project ("binary_scene")
 
 # Add source to this project's executable.
-add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp")
+add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp"  "animation.hpp" "sprite.hpp")
 
-set(LIB_DIR "${CMAKE_SOURCE_DIR}/libs")
-
+set(LIB_DIR "${CMAKE_SOURCE_DIR}/../libs")
 
 set(BOOST_ROOT ${LIB_DIR}/boost/1_73_0)
 set(BOOST_INCLUDEDIR ${LIB_DIR}/boost/1_73_0/boost)
@@ -24,13 +27,13 @@ set(BOOST_INCLUDEDIR ${LIB_DIR}/boost/1_73_0/boost)
 message(STATUS "Lib path: ${LIB_DIR}")
 
 if(DEFINED ARCH_X64)
-    message(STATUS "Setting Boost variables for Windows")
+    message(STATUS "Setting Boost variables for x64")
 	set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib)
 	set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0)
 	set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x64/lib/cmake/Boost-1.73.0")
 	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x64/debug/")
 elseif(DEFINED ARCH_X86)
-    message(STATUS "Setting Boost variables for Windows")
+    message(STATUS "Setting Boost variables for x86")
     set(BOOST_LIBRARYDIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib)
     set(Boost_DIR ${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0)
     set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0")
@@ -39,6 +42,7 @@ else()
 	message(STATUS "***Error: No environment selected***")
 endif() # ARCH
 
+set(BUILD_DEBUG true)
 set(Boost_NO_SYSTEM_PATHS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_LIBS OFF)

@@ -16,15 +16,61 @@ namespace {
 	constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
 }
 
+enum class Stage {
+	none,
+	searchingForEndImage,
+	searchingForEndAnimation,
+};
+
+struct Search {
+	Stage stage;
+
+	Search()
+		: stage(Stage::none){
+
+	}
+};
+
+bool matches(std::string const & a, std::string const & b) {
+	return a.compare(b) == MATCH;
+}
+
+bool matches(char a, char b) {
+	return a == b;
+}
+
+bool isSpacer(char const & c) {
+	if (matches(c, '\t')
+		|| matches(c, ':')
+		|| matches(c, '\n')) {
+		return true;
+	}
+
+	return false;
+}
+
+bool isValidChar(char const & c) {
+	if (matches(c, '\t')
+		|| matches(c, ':')
+		|| matches(c, '\n')) {
+		return false;
+	}
+
+	return true;
+}
+
 option::Behavior getBehavior(std::string const & behavior) {
 	//std::cout << "Behavior: (" << behavior << ")" << std::endl;
-	if (behavior.compare("mirror") == MATCH) {
+	if (matches(behavior, "mirror")) {
 		return option::Behavior::mirror;
-	} else if (behavior.compare("stretch") == MATCH) {
+	} else if (matches(behavior, "stretch")) {
 		return option::Behavior::stretch;
 	}
-	else if (behavior.compare("repeat") == MATCH) {
+	else if (matches(behavior, "repeat")) {
 		return option::Behavior::repeat;
+	}
+	else if (matches(behavior, "center")) {
+		return option::Behavior::center;
 	}
 
 	return option::Behavior::repeat;
@@ -32,24 +78,24 @@ option::Behavior getBehavior(std::string const & behavior) {
 
 option::ImageFormat getImageFormat(std::string & imageFormat) {
 	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
-	if (imageFormat.compare("l") == MATCH) {
+	if (matches(imageFormat, "l")) {
 		return option::ImageFormat::l;
-	} else if (imageFormat.compare("a") == MATCH) {
+	} else if (matches(imageFormat, "a")) {
 		return option::ImageFormat::a;
 	}
-	else if (imageFormat.compare("la") == MATCH) {
+	else if (matches(imageFormat, "la")) {
 		return option::ImageFormat::la;
 	}
-	else if (imageFormat.compare("rgb") == MATCH) {
+	else if (matches(imageFormat, "rgb")) {
 		return option::ImageFormat::rgb;
 	}
-	else if (imageFormat.compare("rgba") == MATCH) {
+	else if (matches(imageFormat, "rgba")) {
 		return option::ImageFormat::rgba;
 	}
-	else if (imageFormat.compare("srgb") == MATCH) {
+	else if (matches(imageFormat, "srgb")) {
 		return option::ImageFormat::srgb;
 	}
-	else if (imageFormat.compare("srgba") == MATCH) {
+	else if (matches(imageFormat, "srgba")) {
 		return option::ImageFormat::srgba;
 	}
 
@@ -61,36 +107,295 @@ void assignUniqueIndex(Scenes & scenes) {
 
 	for (auto & s : scenes.scenes) {
 		for (auto & t : s.textures) {
+			if (t.id == 0) {
+				auto found = false;
+				for (auto & otherS : scenes.scenes) {
+					for (auto & otherT : otherS.textures) {
+						if (&t != &otherT && matches(t.hash, otherT.hash)) {
+							found = true;
+							if (otherT.id == 0) {
+								++id;
+								t.id = id;
+								otherT.id = id;
+							}
+							else {
+								t.id = otherT.id;
+							}
+							break;
+						}
 
-			auto found = false;
-			for (auto & otherS : scenes.scenes) {
-				for (auto & otherT : otherS.textures) {
-					if (&t != &otherT && t.hash.compare(otherT.hash) == MATCH) {
-						found = true;
-						if (otherT.id == 0) {
-							++id;
-							t.id = id;
-							otherT.id = id;
+						if (found) {
+							break;
 						}
-						else {
-							t.id = otherT.id;
+					}
+					if (found) {
+						break;
+					}
+
+					for (auto & otherSprite : otherS.sprites) {
+						for (auto & otherAnimation : otherSprite.animations) {
+							for (auto & otherT : otherAnimation.textures) {
+								if (&t != &otherT && matches(t.hash, otherT.hash)) {
+									found = true;
+									if (otherT.id == 0) {
+										++id;
+										t.id = id;
+										otherT.id = id;
+									}
+									else {
+										t.id = otherT.id;
+									}
+									break;
+								}
+							}
+							if (found) {
+								break;
+							}
 						}
+						if (found) {
+							break;
+						}
+					}
+					if (found) {
 						break;
 					}
 				}
-
-				if (found) {
-					break;
+				if (!found) {
+					++id;
+					t.id = id;
 				}
 			}
-			if (!found) {
-				++id;
-				t.id = id;
+		}
+
+		for (auto & sprite : s.sprites) {
+			for (auto & animation : sprite.animations) {
+				for (auto & t : animation.textures) {
+					auto found = false;
+					for (auto & otherS : scenes.scenes) {
+						for (auto & otherT : otherS.textures) {
+							if (&t != &otherT && matches(t.hash, otherT.hash)) {
+								found = true;
+								if (otherT.id == 0) {
+									++id;
+									t.id = id;
+									otherT.id = id;
+								}
+								else {
+									t.id = otherT.id;
+								}
+								break;
+							}
+						}
+
+						if (found) {
+							break;
+						}
+
+						for (auto & otherSprite : otherS.sprites) {
+							for (auto & otherAnimation : otherSprite.animations) {
+								for (auto & otherT : otherAnimation.textures) {
+									if (&t != &otherT && matches(t.hash, otherT.hash)) {
+										found = true;
+										if (otherT.id == 0) {
+											++id;
+											t.id = id;
+											otherT.id = id;
+										}
+										else {
+											t.id = otherT.id;
+										}
+										break;
+									}
+								}
+								if (found) {
+									break;
+								}
+							}
+							if (found) {
+								break;
+							}
+						}
+					}
+					if (!found) {
+						++id;
+						t.id = id;
+					}
+				}
 			}
 		}
 	}
 
 	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
+}
+
+void addTexture(std::string const & line, Animation & animation, size_t index) {
+	std::cout << "Adding animation texture (" << line << ")" << std::endl;
+	auto items = std::vector<std::string>();
+	items.reserve(5);
+
+	auto const END = std::end(line);
+	auto current = std::begin(line);
+	auto next = std::find_if(current, END, isSpacer);
+	items.push_back(std::to_string(index));
+	items.push_back(line.substr(0, std::distance(std::begin(line), next)));
+	while (next < END) {
+		current = std::find_if(next, END, isValidChar);
+		next = std::find_if(current, END, isSpacer);
+		items.push_back(line.substr(std::distance(std::begin(line), current), std::distance(current, next)));
+	}
+
+	if (items.size() == 5) {
+		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
+							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
+							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+
+		auto & texture = animation.textures.emplace_back(items.at(KEY_NAME),
+														 items.at(KEY_PATH),
+														 std::move(options));
+
+		std::cout << "Successfully added animation texture" << std::endl;
+	}
+	else {	// texture line isn't formatted correctly
+		std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
+	}
+}
+
+void addTexture(std::string const & line, Scene & scene) {
+	//std::cout << "Texture line (" << line << ")" << std::endl;
+	auto items = std::vector<std::string>();
+	items.reserve(5);
+	
+	auto const END = std::end(line);
+	auto current = std::begin(line);
+	auto next = std::find_if(current, END, isSpacer);
+	items.push_back(line.substr(0, std::distance(std::begin(line), next)));
+	while (next < END) {
+		current = std::find_if(next, END, isValidChar);
+		next = std::find_if(current, END, isSpacer);
+		items.push_back(line.substr(std::distance(std::begin(line), current), std::distance(current, next)));
+	}
+
+	if (items.size() == 5) {
+		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
+							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
+							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+
+		auto & texture = scene.textures.emplace_back(items.at(KEY_NAME),
+													 items.at(KEY_PATH),
+													 std::move(options));
+	}
+	else {	// texture line isn't formatted correctly
+		std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
+	}
+}
+
+void addAnimation(std::string const & line, std::vector<Sprite> & sprites) {
+	auto path = std::string("../text/anim/");
+
+	auto const END = std::end(line);
+	auto current = std::begin(line);
+	auto next = std::find_if(current, END, isSpacer);
+
+	auto const SPRITE_NAME = line.substr(0, std::distance(current, next));
+
+	current = std::find_if(next, END, isValidChar);
+	next = std::find_if(current, END, isSpacer);
+	auto const ANIMATION_NAME = line.substr(std::distance(std::begin(line), current));
+	path.append(ANIMATION_NAME);
+
+	if (!matches(path.substr(line.length() - 4, 4), ".txt")) {
+		path.append(".txt");
+	}
+
+	std::cout << "Adding animation: Sprite name (" << SPRITE_NAME << "), animation name (" << ANIMATION_NAME << "), line (" << line << ")" << std::endl;
+
+	Sprite * sprite = nullptr;
+	auto it = std::begin(sprites);
+	while (it < std::end(sprites)) {
+		if (matches(it->name, SPRITE_NAME)) {
+			sprite = &*it;
+			break;
+		}
+		it = std::next(it);
+	}
+
+	if (sprite == nullptr) {
+		sprite = &sprites.emplace_back(SPRITE_NAME);
+	}
+
+	auto ifs = std::ifstream(path);
+	if (ifs.is_open()) {
+		std::cout << "Opened file (" << path << ")" << std::endl;
+		auto s = std::string();
+		if (sprite != nullptr) {
+			auto index = size_t{ 0 };
+			auto found = false;
+			for (auto const & a : sprite->animations) {
+				if (matches(a.name, ANIMATION_NAME)) {
+					found = true;
+						break;
+				}
+			}
+			if (!found) {
+				auto & animation = sprite->animations.emplace_back(ANIMATION_NAME);
+					while (std::getline(ifs, s)) {
+						if (!s.empty()) {
+							++index;
+								addTexture(s, animation, index);
+						}
+					}
+			}
+		}
+
+		std::cout << "Sprite (" << SPRITE_NAME << ") added animation (" << ANIMATION_NAME << ")" << std::endl;
+		ifs.close();
+	}
+	else {
+		std::cerr << "Couldn't read file (" << path << ")" << std::endl;
+	}
+}
+
+void processLine(std::string const & line, Search & search, Scene & scene) {
+	//std::cout << "Line (" << line << ")" << std::endl;
+	auto const BEGIN = std::begin(line);
+	auto const END = std::end(line);
+
+	auto firstCharacter = std::find_if(BEGIN, END, isValidChar);
+	auto lastCharacter = std::find_if(firstCharacter, END, isSpacer);
+
+	switch (search.stage) {
+		case Stage::searchingForEndImage: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>")) {
+				std::cout << "Found </image>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addTexture(line.substr(std::distance(BEGIN, firstCharacter)), scene);
+			}
+			break;
+		}
+		case Stage::searchingForEndAnimation: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sprite>")) {
+				std::cout << "Found </sprite>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addAnimation(line.substr(std::distance(BEGIN, firstCharacter)), scene.sprites);
+			}
+			break;
+		}
+		default: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>")) {
+				std::cout << "Found <image>" << std::endl;
+				search.stage = Stage::searchingForEndImage;
+			}
+			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sprite>")) {
+				std::cout << "Found <sprite>" << std::endl;
+				search.stage = Stage::searchingForEndAnimation;
+			}
+			break;
+		}
+	}
 }
 
 bool makeFileDirs(std::filesystem::path const & file) {
@@ -128,53 +433,24 @@ bool makeFileDirs(std::filesystem::path const & file) {
 }
 
 bool loadScenesText(std::filesystem::path const & path, Scenes & scenes) {
+	std::cout << "Filename: " << path.filename().string() << "		" << path.string() << std::endl
+		<< "-								-" << std::endl;
+
 	auto line = std::string();
 	auto ifs = std::ifstream(path);
 	if (ifs.is_open()) {
-		std::getline(ifs, line);
-		if (line.compare("plaintext") != MATCH) {
-			std::cerr << "Opened file, but the first line isn't 'plaintext'" << std::endl;
-			return false;
-		}
-
-		std::cout << "Filename: " << path.filename().string() << "		" << path.string() << std::endl
-			<< "-								-" << std::endl;
-
 		auto const FILENAME = path.filename().string().substr(0, path.filename().string().size() - path.extension().string().size());
 		auto & scene = scenes.scenes.emplace_back(FILENAME);
+		auto search = Search();
 		while (std::getline(ifs, line)) {
 			if (!line.empty()) {
-				auto items = std::vector<std::string>();
-				items.reserve(5);
-
-				auto const END = std::end(line);
-				auto current = std::begin(line);
-				auto next = std::find(current, END, '\t');
-				items.push_back(line.substr(0, std::distance(std::begin(line), next)));
-				while (next < END) {
-					current = next + 1;
-					next = std::find(current, END, '\t');
-					items.push_back(line.substr(std::distance(std::begin(line), current), std::distance(current, next)));
-				}
-
-				if (items.size() == 5) {
-
-					auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
-										   getBehavior(items.at(KEY_BEHAVIOR_Y)),
-										   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
-
-					auto & texture = scene.textures.emplace_back(items.at(KEY_NAME),
-																 items.at(KEY_PATH),
-																 std::move(options));
-				}
-				else {	// texture line isn't formatted correctly
-					std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
-				}
+				processLine(line, search, scene);
 			}
 		}
 		ifs.close();
 
-		std::cout << "Scene contains " << scene.textures.size() << " named textures" << std::endl;
+		std::cout << "Scene contains " << scene.textures.size() << " named textures, and "
+			<< scene.sprites.size() << " sprites" << std::endl;
 
 		return true;
 	}
@@ -187,7 +463,7 @@ bool loadScenesText(std::filesystem::path const & path, Scenes & scenes) {
 
 bool loadScenes(std::filesystem::path const & path, Scenes & scenes) {
 	auto result = bool{ false };
-	auto ifs = std::ifstream(path);
+	auto ifs = std::ifstream(path, std::ios::binary);
 
 	if (ifs.is_open()) {
 		try {
@@ -265,8 +541,8 @@ bool saveScenes(std::filesystem::path const & path, Scenes const & scenes) {
 
 void convertScenesText(Scenes & scenes) {
 	auto textFiles = std::vector<std::filesystem::path>();
-	if (std::filesystem::exists("../scenes_text/")) {
-		std::filesystem::directory_iterator files("../scenes_text/");
+	if (std::filesystem::exists("../text/scene/")) {
+		std::filesystem::directory_iterator files("../text/scene/");
 		for (auto & f : files) {
 			textFiles.push_back(f.path());
 		}

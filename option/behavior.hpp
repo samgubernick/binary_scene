@@ -5,9 +5,10 @@
 
 namespace option {
 	enum class Behavior {
+		center,
 		mirror,
 		repeat,
-		stretch
+		stretch,
 	};
 }
 #endif // INCLUDE_GUARD
