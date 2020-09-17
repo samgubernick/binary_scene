@@ -78,7 +78,7 @@ option::Behavior getBehavior(std::string const & behavior) {
 
 option::ImageFormat getImageFormat(std::string & imageFormat) {
 	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
-	if (matches(imageFormat, "l")) {
+	if (matches(imageFormat, "l") || matches(imageFormat, "r")) {
 		return option::ImageFormat::l;
 	} else if (matches(imageFormat, "a")) {
 		return option::ImageFormat::a;
@@ -316,10 +316,10 @@ void addAnimationOption(std::string const & line, Animation & animation) {
 		}
 	}
 	else if (matches(KEY, "speed_default")) {
-		animation.speed_default = std::stod(VALUE);
+		animation.speedDefault = std::stod(VALUE);
 	}
 	else if (matches(KEY, "speed_slow")) {
-		animation.speed_slow = std::stod(VALUE);
+		animation.speedSlow = std::stod(VALUE);
 	}
 }
 
@@ -372,7 +372,7 @@ void addAnimation(std::string const & line, std::vector<Sprite> & sprites) {
 	auto const END = std::end(line);
 	auto current = std::begin(line);
 	auto next = std::find_if(current, END, isSpacer);
-
+	
 	auto const SPRITE_NAME = line.substr(0, std::distance(current, next));
 
 	current = std::find_if(next, END, isValidChar);
@@ -380,7 +380,7 @@ void addAnimation(std::string const & line, std::vector<Sprite> & sprites) {
 	auto const ANIMATION_NAME = line.substr(std::distance(std::begin(line), current));
 	path.append(ANIMATION_NAME);
 
-	if (!matches(path.substr(line.length() - 4, 4), ".txt")) {
+	if (!matches(path.substr(ANIMATION_NAME.length() - 4, 4), ".txt")) {
 		path.append(".txt");
 	}
 

@@ -17,15 +17,19 @@ struct Options {
 	unsigned int		channels;
 	option::ImageFormat	imageFormat;
 
-	Options() {
-
-	}
+	Options()
+		: behaviorX(option::Behavior::center)
+		, behaviorY(option::Behavior::center)
+		, channels(0)
+		, imageFormat(option::ImageFormat::a)
+	{ }
 
 	Options(option::Behavior		behaviorX,
 			option::Behavior		behaviorY,
 			option::ImageFormat		imageFormat)
 		: behaviorX(behaviorX)
 		, behaviorY(behaviorY)
+		, channels(0)
 		, imageFormat(imageFormat) {
 
 		switch (imageFormat) {

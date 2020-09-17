@@ -8,10 +8,10 @@ namespace option {
 		a,
 		l,
 		la,
-		rgba,
 		rgb,
-		srgba,
+		rgba,
 		srgb,
+		srgba,
 	};
 }
 #endif // INCLUDE_GUARD

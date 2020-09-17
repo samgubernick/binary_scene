@@ -16,18 +16,22 @@
 struct Animation {
 	std::string name;
 	std::vector<Texture> textures;
-	double speed_default;
-	double speed_slow;
+	double speedDefault;
+	double speedSlow;
 	EndOfAnimation endOfAnimation;
 
-	Animation() {
-
-	}
+	Animation()
+		: speedDefault(0.0)
+		, speedSlow(0.0)
+		, endOfAnimation(EndOfAnimation::stop)
+	{ }
 
 	Animation(std::string name)
-		: name(name) {
-
-	}
+		: name(name)
+		, speedDefault(0.0)
+		, speedSlow(0.0)
+		, endOfAnimation(EndOfAnimation::stop)
+	{ }
 
 private:
 	friend class boost::serialization::access;
@@ -35,6 +39,8 @@ private:
 	void serialize(Archive & ar, const unsigned int version) {
 		ar & endOfAnimation;
 		ar & name;
+		ar & speedDefault;
+		ar & speedSlow;
 		ar & textures;
 	}
 };

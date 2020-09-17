@@ -39,7 +39,7 @@ elseif(DEFINED ARCH_X86)
     set(LOCAL_BOOST_LIB "${LIB_DIR}/boost/1_73_0/stage/x86/lib/cmake/Boost-1.73.0")
 	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x86/debug/")
 else()
-	message(STATUS "***Error: No environment selected***")
+	message(FATAL_ERROR "***Error: No environment selected***")
 endif() # ARCH
 
 set(BUILD_DEBUG true)
@@ -59,12 +59,14 @@ elseif(DEFINED BUILD_RELEASE)
 	set(Boost_DEBUG OFF)
 	set(Boost_USE_RELEASE_LIBS ON)
 else()
-	message(STATUS "***Error: No environment selected***")
+	message(FATAL_ERROR "***Error: No environment selected***")
 endif() # debug
 
 if(DEFINED ARCH_X64)
+	message(STATUS "Using x64 architecture")
 	set(Boost_ARCHITECTURE -x64)
 elseif(DEFINED ARCH_X86)
+	message(STATUS "Using x86 architecture")
 	set(Boost_ARCHITECTURE -x86)
 endif() # ARCH
 
@@ -92,7 +94,7 @@ elseif(DEFINED ARCH_X86)
 		PRIVATE ARCH_X86
 		)
 else()
-	message(STATUS "***Error: No architecture specified***")
+	message(FATAL_ERROR "***Error: No architecture specified***")
 endif() # ARCH
 
 target_link_libraries(binary_scene PUBLIC ${Boost_LIBRARIES})
@@ -102,9 +104,9 @@ include_directories("${LIB_DIR}/soil2/current/include/")
 find_library(
 	soil2
 	NAMES soil2-debug soil2
-	PATHS SOIL2_PATH
+	PATHS ${SOIL2_PATH}
 	NO_DEFAULT_PATH
 	NO_CMAKE_ENVIRONMENT_PATH
 	NO_SYSTEM_ENVIRONMENT_PATH
 )
-message(STATUS "SOIL2 path: ${soil2}")
+message(STATUS "SOIL2 status: ${soil2}")
