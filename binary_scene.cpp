@@ -18,15 +18,17 @@ namespace {
 
 enum class Stage {
 	none,
-	searchingForEndImage,
 	searchingForEndAnimation,
+	searchingForEndBgm,
+	searchingForEndImage,
+	searchingForEndSfx,
 };
 
 struct Search {
 	Stage stage;
 
 	Search()
-		: stage(Stage::none){
+		: stage(Stage::none) {
 
 	}
 };
@@ -223,6 +225,72 @@ void assignUniqueIndex(Scenes & scenes) {
 				}
 			}
 		}
+
+		for (auto & t : s.bgm) {
+			if (t.id == 0) {
+				auto found = false;
+				for (auto & otherS : scenes.scenes) {
+					for (auto & otherT : otherS.bgm) {
+						if (&t != &otherT && matches(t.hash, otherT.hash)) {
+							found = true;
+							if (otherT.id == 0) {
+								++id;
+								t.id = id;
+								otherT.id = id;
+							}
+							else {
+								t.id = otherT.id;
+							}
+							break;
+						}
+
+						if (found) {
+							break;
+						}
+					}
+					if (found) {
+						break;
+					}
+				}
+				if (!found) {
+					++id;
+					t.id = id;
+				}
+			}
+		}
+
+		for (auto & t : s.sfx) {
+			if (t.id == 0) {
+				auto found = false;
+				for (auto & otherS : scenes.scenes) {
+					for (auto & otherT : otherS.sfx) {
+						if (&t != &otherT && matches(t.hash, otherT.hash)) {
+							found = true;
+							if (otherT.id == 0) {
+								++id;
+								t.id = id;
+								otherT.id = id;
+							}
+							else {
+								t.id = otherT.id;
+							}
+							break;
+						}
+
+						if (found) {
+							break;
+						}
+					}
+					if (found) {
+						break;
+					}
+				}
+				if (!found) {
+					++id;
+					t.id = id;
+				}
+			}
+		}
 	}
 
 	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
@@ -320,6 +388,30 @@ void addAnimationOption(std::string const & line, Animation & animation) {
 	}
 	else if (matches(KEY, "speed_slow")) {
 		animation.speedSlow = std::stod(VALUE);
+	}
+}
+
+void addSound(std::string const & line, std::vector<Sound> & sounds) {
+	//std::cout << "Texture line (" << line << ")" << std::endl;
+	auto items = std::vector<std::string>();
+	items.reserve(2);
+
+	auto const END = std::end(line);
+	auto current = std::begin(line);
+	auto next = std::find_if(current, END, isSpacer);
+	items.push_back(line.substr(0, std::distance(std::begin(line), next)));
+	while (next < END) {
+		current = std::find_if(next, END, isValidChar);
+		next = std::find_if(current, END, isSpacer);
+		items.push_back(line.substr(std::distance(std::begin(line), current), std::distance(current, next)));
+	}
+
+	if (items.size() == 2) {
+		sounds.emplace_back(items.at(KEY_NAME),
+							items.at(KEY_PATH));
+	}
+	else {	// sound line isn't formatted correctly
+		std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
 	}
 }
 
@@ -442,6 +534,26 @@ void processLine(std::string const & line, Search & search, Scene & scene) {
 	auto lastCharacter = std::find_if(firstCharacter, END, isSpacer);
 
 	switch (search.stage) {
+		case Stage::searchingForEndBgm: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</bgm>")) {
+				std::cout << "Found </bgm>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm);
+			}
+			break;
+		}
+		case Stage::searchingForEndSfx: {
+			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sfx>")) {
+				std::cout << "Found </sfx>" << std::endl;
+				search.stage = Stage::none;
+			}
+			else {
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx);
+			}
+			break;
+		}
 		case Stage::searchingForEndImage: {
 			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>")) {
 				std::cout << "Found </image>" << std::endl;
@@ -470,6 +582,14 @@ void processLine(std::string const & line, Search & search, Scene & scene) {
 			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sprite>")) {
 				std::cout << "Found <sprite>" << std::endl;
 				search.stage = Stage::searchingForEndAnimation;
+			}
+			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<bgm>")) {
+				std::cout << "Found <bgm>" << std::endl;
+				search.stage = Stage::searchingForEndBgm;
+			}
+			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sfx>")) {
+				std::cout << "Found <sfx>" << std::endl;
+				search.stage = Stage::searchingForEndSfx;
 			}
 			break;
 		}
@@ -520,6 +640,7 @@ bool loadScenesText(std::filesystem::path const & path, Scenes & scenes) {
 		auto const FILENAME = path.filename().string().substr(0, path.filename().string().size() - path.extension().string().size());
 		auto & scene = scenes.scenes.emplace_back(FILENAME);
 		auto search = Search();
+		search.stage = Stage::none;
 		while (std::getline(ifs, line)) {
 			if (!line.empty()) {
 				processLine(line, search, scene);
