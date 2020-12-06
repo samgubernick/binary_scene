@@ -391,7 +391,7 @@ void addAnimationOption(std::string const & line, Animation & animation) {
 	}
 }
 
-void addSound(std::string const & line, std::vector<Sound> & sounds) {
+void addSound(std::string const & line, std::vector<Sound> & sounds, Sound::Group group) {
 	//std::cout << "Texture line (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
 	items.reserve(2);
@@ -408,7 +408,8 @@ void addSound(std::string const & line, std::vector<Sound> & sounds) {
 
 	if (items.size() == 2) {
 		sounds.emplace_back(items.at(KEY_NAME),
-							items.at(KEY_PATH));
+							items.at(KEY_PATH),
+							group);
 	}
 	else {	// sound line isn't formatted correctly
 		std::cerr << "Error--line isn't formatted correctly: (" << line << ")" << std::endl;
@@ -540,7 +541,7 @@ void processLine(std::string const & line, Search & search, Scene & scene) {
 				search.stage = Stage::none;
 			}
 			else {
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm, Sound::Group::bgm);
 			}
 			break;
 		}
@@ -550,7 +551,7 @@ void processLine(std::string const & line, Search & search, Scene & scene) {
 				search.stage = Stage::none;
 			}
 			else {
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx, Sound::Group::sfx);
 			}
 			break;
 		}
