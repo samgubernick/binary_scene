@@ -1,6 +1,6 @@
 
-#ifndef SAM_SPRITE_HPP_INCLUDED
-#define SAM_SPRITE_HPP_INCLUDED
+#ifndef SAM_BINARY_SPRITE_HPP_INCLUDED
+#define SAM_BINARY_SPRITE_HPP_INCLUDED
 #pragma once
 
 #include "animation.hpp"
@@ -12,25 +12,30 @@
 #include <string>
 #include <vector>
 
-struct Sprite {
-	std::string name;
-	std::vector<Animation> animations;
+namespace sam
+{
+	namespace binary {
+		struct Sprite {
+			std::string name;
+			std::vector<Animation> animations;
 
-	Sprite() {
+			Sprite() {
 
+			}
+
+			Sprite(std::string name)
+				: name(name) {
+
+			}
+
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive & ar, const unsigned int version) {
+				ar & name;
+				ar & animations;
+			}
+		};
 	}
-
-	Sprite(std::string name)
-		: name(name) {
-
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & name;
-		ar & animations;
-	}
-};
+}
 #endif // INCLUDE_GUARD

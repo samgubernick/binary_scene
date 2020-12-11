@@ -1,6 +1,6 @@
 
-#ifndef SAM_SOUND_HPP_INCLUDED
-#define SAM_SOUND_HPP_INCLUDED
+#ifndef SAM_BINARY_SOUND_HPP_INCLUDED
+#define SAM_BINARY_SOUND_HPP_INCLUDED
 #pragma once
 
 #include "boost/archive/binary_iarchive.hpp"
@@ -8,47 +8,55 @@
 
 #include <string>
 
-struct Sound {
-	enum class Group
+namespace sam
+{
+	namespace binary
 	{
-		bgm,
-		custom,
-		sfx,
-		none,
-	};
+		struct Sound {
+			enum class Group
+			{
+				bgm,
+				custom,
+				sfx,
+				none,
+			};
 
-	std::string	name;
-	std::string	path;
-	std::string	hash;
-	size_t		id;
-	Group		group;
+			std::string	name;
+			std::string	path;
+			std::string	hash;
+			size_t		id;
+			Group		group;
 
-	Sound()
-		: group(Group::none)
-	{
+			Sound()
+				: group(Group::none)
+			{
 
+			}
+
+			Sound(std::string	name,
+				  std::string	path,
+				  Group			group)
+				: name(name)
+				, path(path)
+				, id(0)
+				, group(group)
+			{
+
+				hash = path;
+			}
+
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive & ar, const unsigned int version)
+			{
+				ar & name;
+				ar & path;
+				ar & hash;
+				ar & id;
+				ar & group;
+			}
+		};
 	}
-
-	Sound(std::string	name,
-		  std::string	path,
-		  Group			group)
-		: group(group)
-		, name(name)
-		, path(path)
-		, id(0) {
-
-		hash = path;
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & group;
-		ar & name;
-		ar & path;
-		ar & hash;
-		ar & id;
-	}
-};
+}
 #endif // INCLUDE_GUARD

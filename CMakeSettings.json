@@ -34,7 +34,18 @@
       "buildCommandArgs": "",
       "ctestCommandArgs": "",
       "inheritEnvironments": [ "msvc_x86" ],
-      "variables": []
+      "variables": [
+        {
+          "name": "ARCH",
+          "value": "x86",
+          "type": "STRING"
+        },
+        {
+          "name": "BUILD_TYPE",
+          "value": "debug",
+          "type": "STRING"
+        }
+      ]
     }
   ]
 }

@@ -4,10 +4,10 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-if(${CMAKE_EXE_LINKER_FLAGS} STREQUAL /machine:x64)
+if(${ARCH} STREQUAL "x64")
 	message(STATUS "Using x64")
 	set(ARCH_X64 TRUE)
-elseif(${CMAKE_EXE_LINKER_FLAGS} STREQUAL /machine:X86)
+elseif(${ARCH} STREQUAL "x86")
 	message(STATUS "Using x86")
 	set(ARCH_X86 TRUE)
 else()
@@ -17,7 +17,7 @@ endif()
 project ("binary_scene")
 
 # Add source to this project's executable.
-add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp"  "animation.hpp" "sprite.hpp")
+add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp"  "animation.hpp" "sprite.hpp" "program.hpp" "program.cpp")
 
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/../libs")
 

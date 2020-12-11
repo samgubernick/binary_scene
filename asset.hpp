@@ -1,6 +1,6 @@
 
-#ifndef SAM_ASSET_HPP_INCLUDED
-#define SAM_ASSET_HPP_INCLUDED
+#ifndef SAM_BINARY_ASSET_HPP_INCLUDED
+#define SAM_BINARY_ASSET_HPP_INCLUDED
 #pragma once
 
 #include "boost/archive/binary_iarchive.hpp"
@@ -8,26 +8,32 @@
 
 #include <string>
 
-struct Asset {
-	std::string name;
-	std::string path;
+namespace sam
+{
+	namespace binary
+	{
+		struct Asset {
+			std::string name;
+			std::string path;
 
-	Asset() {
+			Asset() {
 
+			}
+
+			Asset(std::string name, std::string path)
+				: name(name)
+				, path(path) {
+
+			}
+
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive & ar, const unsigned int version) {
+				ar & name;
+				ar & path;
+			}
+		};
 	}
-
-	Asset(std::string name, std::string path)
-		: name(name)
-		, path(path) {
-
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & name;
-		ar & path;
-	}
-};
+}
 #endif // INCLUDE_GUARD

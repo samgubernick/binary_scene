@@ -1,6 +1,6 @@
 
-#ifndef SAM_TEXTURE_HPP_INCLUDED
-#define SAM_TEXTURE_HPP_INCLUDED
+#ifndef SAM_BINARY_TEXTURE_HPP_INCLUDED
+#define SAM_BINARY_TEXTURE_HPP_INCLUDED
 #pragma once
 
 #include "options.hpp"
@@ -10,40 +10,46 @@
 
 #include <string>
 
-struct Texture {
-	std::string	name;
-	std::string	path;
-	Options		options;
-	std::string	hash;
-	size_t		id;
+namespace sam
+{
+	namespace binary
+	{
+		struct Texture {
+			std::string	name;
+			std::string	path;
+			Options		options;
+			std::string	hash;
+			size_t		id;
 
-	Texture() {
+			Texture() {
 
+			}
+
+			Texture(std::string	name,
+					std::string	path,
+					Options		options)
+				: name(name)
+				, path(path)
+				, options(std::move(options))
+				, id(0) {
+
+				hash = path;
+				hash.append(std::to_string(static_cast<int>(options.imageFormat)))
+					.append(std::to_string(static_cast<int>(options.behaviorX)))
+					.append(std::to_string(static_cast<int>(options.behaviorY)));
+			}
+
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive & ar, const unsigned int version) {
+				ar & name;
+				ar & path;
+				ar & options;
+				ar & hash;
+				ar & id;
+			}
+		};
 	}
-
-	Texture(std::string	name,
-			std::string	path,
-			Options		options)
-		: name(name)
-		, path(path)
-		, options(std::move(options))
-		, id(0) {
-
-		hash = path;
-		hash.append(std::to_string(static_cast<int>(options.imageFormat)))
-			.append(std::to_string(static_cast<int>(options.behaviorX)))
-			.append(std::to_string(static_cast<int>(options.behaviorY)));
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & name;
-		ar & path;
-		ar & options;
-		ar & hash;
-		ar & id;
-	}
-};
+}
 #endif // INCLUDE_GUARD

@@ -1,6 +1,6 @@
 
-#ifndef SAM_SCENE_HPP_INCLUDED
-#define SAM_SCENE_HPP_INCLUDED
+#ifndef SAM_BINARY_SCENE_HPP_INCLUDED
+#define SAM_BINARY_SCENE_HPP_INCLUDED
 #pragma once
 
 #include "sound.hpp"
@@ -14,31 +14,37 @@
 #include <string>
 #include <vector>
 
-struct Scene {
-	std::string name;
-	std::vector<Texture> textures;
-	std::vector<Sprite> sprites;
-	std::vector<Sound> bgm;
-	std::vector<Sound> sfx;
+namespace sam
+{
+	namespace binary
+	{
+		struct Scene {
+			std::string name;
+			std::vector<Texture> textures;
+			std::vector<Sprite> sprites;
+			std::vector<Sound> bgm;
+			std::vector<Sound> sfx;
 
-	Scene() {
+			Scene() {
 
+			}
+
+			Scene(std::string name)
+				: name(name) {
+
+			}
+
+		private:
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive & ar, const unsigned int version) {
+				ar & name;
+				ar & bgm;
+				ar & sfx;
+				ar & sprites;
+				ar & textures;
+			}
+		};
 	}
-
-	Scene(std::string name)
-		: name(name) {
-
-	}
-
-private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive & ar, const unsigned int version) {
-		ar & name;
-		ar & bgm;
-		ar & sfx;
-		ar & sprites;
-		ar & textures;
-	}
-};
+}
 #endif // INCLUDE_GUARD
