@@ -12,12 +12,18 @@ elseif(${ARCH} STREQUAL "x86")
 	set(ARCH_X86 TRUE)
 else()
 	message(STATUS "Unknown linker flags: ${CMAKE_EXE_LINKER_FLAGS}")
-endif()
+endif() # ARCH
 
 project ("binary_scene")
 
 # Add source to this project's executable.
 add_executable (binary_scene "binary_scene.cpp"  "asset.hpp" "scene.hpp" "scenes.hpp" "texture.hpp" "options.hpp" "option/behavior.hpp" "option/image_format.hpp"  "animation.hpp" "sprite.hpp" "program.hpp" "program.cpp")
+
+if (DEFINED ARCH_X64)
+	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "binary_data_x64")
+else()
+	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "binary_data_x86")
+endif() # ARCH_X64
 
 set(LIB_DIR "${CMAKE_SOURCE_DIR}/../libs")
 
