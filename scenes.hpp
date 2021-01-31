@@ -15,12 +15,14 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Scenes {
+		struct Scenes
+		{
 			std::vector<Scene> scenes;
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & scenes;
 			}
 		};

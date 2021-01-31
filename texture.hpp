@@ -14,16 +14,17 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Texture {
+		struct Texture
+		{
 			std::string	name;
 			std::string	path;
 			Options		options;
 			std::string	hash;
 			size_t		id;
 
-			Texture() {
-
-			}
+			Texture()
+				: id(0)
+			{ }
 
 			Texture(std::string	name,
 					std::string	path,
@@ -31,8 +32,8 @@ namespace sam
 				: name(name)
 				, path(path)
 				, options(std::move(options))
-				, id(0) {
-
+				, id(0)
+			{
 				hash = path;
 				hash.append(std::to_string(static_cast<int>(options.imageFormat)))
 					.append(std::to_string(static_cast<int>(options.behaviorX)))
@@ -42,7 +43,8 @@ namespace sam
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & name;
 				ar & path;
 				ar & options;

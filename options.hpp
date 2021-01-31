@@ -15,7 +15,8 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Options {
+		struct Options
+		{
 			option::Behavior	behaviorX;
 			option::Behavior	behaviorY;
 			unsigned int		channels;
@@ -34,44 +35,52 @@ namespace sam
 				: behaviorX(behaviorX)
 				, behaviorY(behaviorY)
 				, channels(0)
-				, imageFormat(imageFormat) {
-
-				switch (imageFormat) {
-					case option::ImageFormat::a: {
+				, imageFormat(imageFormat)
+			{
+				switch (imageFormat)
+				{
+					case option::ImageFormat::a:
+					{
 						channels = SOIL_LOAD_L;
 						break;
 					}
-					case option::ImageFormat::l: {
+					case option::ImageFormat::l:
+					{
 						channels = SOIL_LOAD_L;
 						break;
 					}
-					case option::ImageFormat::la: {
+					case option::ImageFormat::la:
+					{
 						channels = SOIL_LOAD_LA;
 						break;
 					}
-					case option::ImageFormat::rgb: {
+					case option::ImageFormat::rgb:
+					{
 						channels = SOIL_LOAD_RGB;
 						break;
 					}
-					case option::ImageFormat::rgba: {
+					case option::ImageFormat::rgba:
+					{
 						channels = SOIL_LOAD_RGB;
 						break;
 					}
-					case option::ImageFormat::srgb: {
+					case option::ImageFormat::srgb:
+					{
 						channels = SOIL_LOAD_RGB;
 						break;
 					}
-					case option::ImageFormat::srgba: {
+					case option::ImageFormat::srgba:
+					{
 						channels = SOIL_LOAD_RGB;
 						break;
 					}
 				}
 			}
-
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & behaviorX;
 				ar & behaviorY;
 				ar & channels;

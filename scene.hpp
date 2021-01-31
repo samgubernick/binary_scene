@@ -18,26 +18,25 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Scene {
+		struct Scene
+		{
 			std::string name;
 			std::vector<Texture> textures;
 			std::vector<Sprite> sprites;
 			std::vector<Sound> bgm;
 			std::vector<Sound> sfx;
 
-			Scene() {
-
-			}
+			Scene() { }
 
 			Scene(std::string name)
-				: name(name) {
-
-			}
+				: name(name)
+			{ }
 
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & name;
 				ar & bgm;
 				ar & sfx;

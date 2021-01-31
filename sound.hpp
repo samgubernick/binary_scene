@@ -12,7 +12,8 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Sound {
+		struct Sound
+		{
 			enum class Group
 			{
 				bgm,
@@ -29,9 +30,8 @@ namespace sam
 
 			Sound()
 				: group(Group::none)
-			{
-
-			}
+				, id(0)
+			{ }
 
 			Sound(std::string	name,
 				  std::string	path,
@@ -41,14 +41,13 @@ namespace sam
 				, id(0)
 				, group(group)
 			{
-
 				hash = path;
 			}
 
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version)
+			void serialize(Archive & ar, unsigned int version)
 			{
 				ar & name;
 				ar & path;

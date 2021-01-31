@@ -14,24 +14,24 @@
 
 namespace sam
 {
-	namespace binary {
-		struct Sprite {
+	namespace binary
+	{
+		struct Sprite
+		{
 			std::string name;
 			std::vector<Animation> animations;
 
-			Sprite() {
-
-			}
+			Sprite() { }
 
 			Sprite(std::string name)
-				: name(name) {
-
-			}
+				: name(name)
+			{ }
 
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & name;
 				ar & animations;
 			}

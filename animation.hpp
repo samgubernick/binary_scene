@@ -17,7 +17,8 @@ namespace sam
 {
 	namespace binary
 	{
-		struct Animation {
+		struct Animation
+		{
 			std::string name;
 			std::vector<Texture> textures;
 			double speedDefault;
@@ -41,7 +42,8 @@ namespace sam
 		private:
 			friend class boost::serialization::access;
 			template<class Archive>
-			void serialize(Archive & ar, const unsigned int version) {
+			void serialize(Archive & ar, unsigned int version)
+			{
 				ar & endOfAnimation;
 				ar & name;
 				ar & speedDefault;
