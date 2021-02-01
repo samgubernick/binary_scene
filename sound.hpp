@@ -1,20 +1,20 @@
 
-#ifndef SAM_BINARY_SOUND_HPP_INCLUDED
-#define SAM_BINARY_SOUND_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_SOUND_HPP_INCLUDED
+#define SAM_BINARY_DATA_SOUND_HPP_INCLUDED
 #pragma once
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
+#include "bitsery/serializer.h"
+#include "bitsery/traits/string.h"
 
 #include <string>
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Sound
 		{
-			enum class Group
+			enum class Group:uint8_t
 			{
 				bgm,
 				custom,
@@ -25,7 +25,7 @@ namespace sam
 			std::string	name;
 			std::string	path;
 			std::string	hash;
-			size_t		id;
+			uint32_t	id;
 			Group		group;
 
 			Sound()
@@ -43,17 +43,16 @@ namespace sam
 			{
 				hash = path;
 			}
-
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & name;
-				ar & path;
-				ar & hash;
-				ar & id;
-				ar & group;
+				s.text1b(name, 512);
+				s.text1b(path, 1024);
+				s.text1b(hash, 1024);
+				s.value4b(id);
+				s.value1b(group);
 			}
 		};
 	}

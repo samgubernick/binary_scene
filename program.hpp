@@ -1,6 +1,6 @@
 
-#ifndef SAM_BINARY_PROGRAM_HPP_INCLUDED
-#define SAM_BINARY_PROGRAM_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_PROGRAM_HPP_INCLUDED
+#define SAM_BINARY_DATA_PROGRAM_HPP_INCLUDED
 #pragma once
 
 #include "scenes.hpp"
@@ -12,7 +12,7 @@
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		class Program
 		{

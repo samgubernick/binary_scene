@@ -1,21 +1,20 @@
 
-#ifndef SAM_BINARY_ANIMATION_HPP_INCLUDED
-#define SAM_BINARY_ANIMATION_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_ANIMATION_HPP_INCLUDED
+#define SAM_BINARY_DATA_ANIMATION_HPP_INCLUDED
 #pragma once
 
 #include "end_of_animation.hpp"
 #include "texture.hpp"
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/vector.hpp"
+#include "bitsery/serializer.h"
+#include "bitsery/traits/vector.h"
 
 #include <string>
 #include <vector>
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Animation
 		{
@@ -40,15 +39,15 @@ namespace sam
 			{ }
 
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & endOfAnimation;
-				ar & name;
-				ar & speedDefault;
-				ar & speedSlow;
-				ar & textures;
+				s.value1b(endOfAnimation);
+				s.text1b(name, 512);
+				s.value8b(speedDefault);
+				s.value8b(speedSlow);
+				s.container(textures, 64);
 			}
 		};
 	}

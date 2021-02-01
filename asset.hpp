@@ -3,8 +3,7 @@
 #define SAM_BINARY_ASSET_HPP_INCLUDED
 #pragma once
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
+#include "bitsery/serializer.h"
 
 #include <string>
 
@@ -25,12 +24,16 @@ namespace sam
 			{ }
 
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & name;
-				ar & path;
+				s.ext(*this, bitsery::ext::Growable{}, [](S & s, Animation & o)
+					  {
+						  s.text1b(o.name, 512);
+						  s.text1b(o.path, 1024);
+					  }
+				);
 			}
 		};
 	}

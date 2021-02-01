@@ -1,18 +1,18 @@
 
-#ifndef SAM_BINARY_TEXTURE_HPP_INCLUDED
-#define SAM_BINARY_TEXTURE_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_TEXTURE_HPP_INCLUDED
+#define SAM_BINARY_DATA_TEXTURE_HPP_INCLUDED
 #pragma once
 
 #include "options.hpp"
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
+#include "bitsery/serializer.h"
+#include "bitsery/traits/string.h"
 
 #include <string>
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Texture
 		{
@@ -20,7 +20,7 @@ namespace sam
 			std::string	path;
 			Options		options;
 			std::string	hash;
-			size_t		id;
+			uint32_t	id;
 
 			Texture()
 				: id(0)
@@ -39,17 +39,16 @@ namespace sam
 					.append(std::to_string(static_cast<int>(options.behaviorX)))
 					.append(std::to_string(static_cast<int>(options.behaviorY)));
 			}
-
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & name;
-				ar & path;
-				ar & options;
-				ar & hash;
-				ar & id;
+				s.text1b(name, 512);
+				s.text1b(path, 1024);
+				s.object(options);
+				s.text1b(hash, 512);
+				s.value4b(id);
 			}
 		};
 	}

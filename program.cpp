@@ -1,40 +1,34 @@
 
 #include "program.hpp"
 
+#include "assign_unique_index.hpp"
+#include "is_match.hpp"
 #include "scenes.hpp"
+
+#include "bitsery/adapter/stream.h"
+#include "bitsery/bitsery.h"
 
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <vector>
 
-namespace cur = sam::binary;
+namespace cur = sam::binary_data;
 
 namespace
 {
-	constexpr auto const MATCH = int{ 0 };
-
+	
 	constexpr auto const KEY_NAME = size_t{ 0 };
 	constexpr auto const KEY_PATH = size_t{ 1 };
 	constexpr auto const KEY_IMAGE_FORMAT = size_t{ 2 };
 	constexpr auto const KEY_BEHAVIOR_X = size_t{ 3 };
 	constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
 
-	bool matches(std::string const & a, std::string const & b)
-	{
-		return a.compare(b) == MATCH;
-	}
-
-	bool matches(char a, char b)
-	{
-		return a == b;
-	}
-
 	bool isSpacer(char const & c)
 	{
-		if (matches(c, '\t')
-			|| matches(c, ':')
-			|| matches(c, '\n'))
+		if (cur::is_match(c, '\t')
+			|| cur::is_match(c, ':')
+			|| cur::is_match(c, '\n'))
 		{
 			return true;
 		}
@@ -44,9 +38,9 @@ namespace
 
 	bool isValidChar(char const & c)
 	{
-		if (matches(c, '\t')
-			|| matches(c, ':')
-			|| matches(c, '\n'))
+		if (cur::is_match(c, '\t')
+			|| cur::is_match(c, ':')
+			|| cur::is_match(c, '\n'))
 		{
 			return false;
 		}
@@ -63,19 +57,19 @@ cur::Program::Program()
 cur::option::Behavior cur::Program::getBehavior(std::string const & behavior)
 {
 	//std::cout << "Behavior: (" << behavior << ")" << std::endl;
-	if (matches(behavior, "mirror"))
+	if (is_match(behavior, "mirror"))
 	{
 		return option::Behavior::mirror;
 	}
-	else if (matches(behavior, "stretch"))
+	else if (is_match(behavior, "stretch"))
 	{
 		return option::Behavior::stretch;
 	}
-	else if (matches(behavior, "repeat"))
+	else if (is_match(behavior, "repeat"))
 	{
 		return option::Behavior::repeat;
 	}
-	else if (matches(behavior, "center"))
+	else if (is_match(behavior, "center"))
 	{
 		return option::Behavior::center;
 	}
@@ -86,286 +80,36 @@ cur::option::Behavior cur::Program::getBehavior(std::string const & behavior)
 cur::option::ImageFormat cur::Program::getImageFormat(std::string & imageFormat)
 {
 	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
-	if (matches(imageFormat, "l") || matches(imageFormat, "r"))
+	if (is_match(imageFormat, "l") || is_match(imageFormat, "r"))
 	{
 		return option::ImageFormat::l;
 	}
-	else if (matches(imageFormat, "a"))
+	else if (is_match(imageFormat, "a"))
 	{
 		return option::ImageFormat::a;
 	}
-	else if (matches(imageFormat, "la"))
+	else if (is_match(imageFormat, "la"))
 	{
 		return option::ImageFormat::la;
 	}
-	else if (matches(imageFormat, "rgb"))
+	else if (is_match(imageFormat, "rgb"))
 	{
 		return option::ImageFormat::rgb;
 	}
-	else if (matches(imageFormat, "rgba"))
+	else if (is_match(imageFormat, "rgba"))
 	{
 		return option::ImageFormat::rgba;
 	}
-	else if (matches(imageFormat, "srgb"))
+	else if (is_match(imageFormat, "srgb"))
 	{
 		return option::ImageFormat::srgb;
 	}
-	else if (matches(imageFormat, "srgba"))
+	else if (is_match(imageFormat, "srgba"))
 	{
 		return option::ImageFormat::srgba;
 	}
 
 	return option::ImageFormat::a;
-}
-
-void cur::Program::assignUniqueIndex(cur::Scenes & scenes)
-{
-	auto id = size_t{ 0 };
-
-	for (auto & s : scenes.scenes)
-	{
-		for (auto & t : s.textures)
-		{
-			if (t.id == 0)
-			{
-				auto found = false;
-				for (auto & otherS : scenes.scenes)
-				{
-					for (auto & otherT : otherS.textures)
-					{
-						if (&t != &otherT && matches(t.hash, otherT.hash))
-						{
-							found = true;
-							if (otherT.id == 0)
-							{
-								++id;
-								t.id = id;
-								otherT.id = id;
-							}
-							else
-							{
-								t.id = otherT.id;
-							}
-							break;
-						}
-
-						if (found)
-						{
-							break;
-						}
-					}
-					if (found)
-					{
-						break;
-					}
-
-					for (auto & otherSprite : otherS.sprites)
-					{
-						for (auto & otherAnimation : otherSprite.animations)
-						{
-							for (auto & otherT : otherAnimation.textures)
-							{
-								if (&t != &otherT && matches(t.hash, otherT.hash))
-								{
-									found = true;
-									if (otherT.id == 0)
-									{
-										++id;
-										t.id = id;
-										otherT.id = id;
-									}
-									else
-									{
-										t.id = otherT.id;
-									}
-									break;
-								}
-							}
-							if (found)
-							{
-								break;
-							}
-						}
-						if (found)
-						{
-							break;
-						}
-					}
-					if (found)
-					{
-						break;
-					}
-				}
-				if (!found)
-				{
-					++id;
-					t.id = id;
-				}
-			}
-		}
-
-		for (auto & sprite : s.sprites)
-		{
-			for (auto & animation : sprite.animations)
-			{
-				for (auto & t : animation.textures)
-				{
-					auto found = false;
-					for (auto & otherS : scenes.scenes)
-					{
-						for (auto & otherT : otherS.textures)
-						{
-							if (&t != &otherT && matches(t.hash, otherT.hash))
-							{
-								found = true;
-								if (otherT.id == 0)
-								{
-									++id;
-									t.id = id;
-									otherT.id = id;
-								}
-								else
-								{
-									t.id = otherT.id;
-								}
-								break;
-							}
-						}
-
-						if (found)
-						{
-							break;
-						}
-
-						for (auto & otherSprite : otherS.sprites)
-						{
-							for (auto & otherAnimation : otherSprite.animations)
-							{
-								for (auto & otherT : otherAnimation.textures)
-								{
-									if (&t != &otherT && matches(t.hash, otherT.hash))
-									{
-										found = true;
-										if (otherT.id == 0)
-										{
-											++id;
-											t.id = id;
-											otherT.id = id;
-										}
-										else
-										{
-											t.id = otherT.id;
-										}
-										break;
-									}
-								}
-								if (found)
-								{
-									break;
-								}
-							}
-							if (found)
-							{
-								break;
-							}
-						}
-					}
-					if (!found)
-					{
-						++id;
-						t.id = id;
-					}
-				}
-			}
-		}
-
-		for (auto & t : s.bgm)
-		{
-			if (t.id == 0)
-			{
-				auto found = false;
-				for (auto & otherS : scenes.scenes)
-				{
-					for (auto & otherT : otherS.bgm)
-					{
-						if (&t != &otherT && matches(t.hash, otherT.hash))
-						{
-							found = true;
-							if (otherT.id == 0)
-							{
-								++id;
-								t.id = id;
-								otherT.id = id;
-							}
-							else
-							{
-								t.id = otherT.id;
-							}
-							break;
-						}
-
-						if (found)
-						{
-							break;
-						}
-					}
-					if (found)
-					{
-						break;
-					}
-				}
-				if (!found) {
-					++id;
-					t.id = id;
-				}
-			}
-		}
-
-		for (auto & t : s.sfx)
-		{
-			if (t.id == 0)
-			{
-				auto found = false;
-				for (auto & otherS : scenes.scenes)
-				{
-					for (auto & otherT : otherS.sfx)
-					{
-						if (&t != &otherT && matches(t.hash, otherT.hash))
-						{
-							found = true;
-							if (otherT.id == 0)
-							{
-								++id;
-								t.id = id;
-								otherT.id = id;
-							}
-							else
-							{
-								t.id = otherT.id;
-							}
-							break;
-						}
-
-						if (found)
-						{
-							break;
-						}
-					}
-					if (found)
-					{
-						break;
-					}
-				}
-				if (!found)
-				{
-					++id;
-					t.id = id;
-				}
-			}
-		}
-	}
-
-	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
 }
 
 void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture> & textures, size_t lineIndex)
@@ -455,26 +199,26 @@ void cur::Program::addAnimationOption(std::string const & line, cur::Animation &
 
 	std::cout << "Adding animation option: (" << KEY << ") = (" << VALUE << ")" << std::endl;
 
-	if (matches(KEY, "do_at_end"))
+	if (is_match(KEY, "do_at_end"))
 	{
-		if (matches(VALUE, "reset"))
+		if (is_match(VALUE, "reset"))
 		{
 			animation.endOfAnimation = cur::EndOfAnimation::reset;
 		}
-		else if (matches(VALUE, "reverse"))
+		else if (is_match(VALUE, "reverse"))
 		{
 			animation.endOfAnimation = cur::EndOfAnimation::reverse;
 		}
-		else if (matches(VALUE, "stop"))
+		else if (is_match(VALUE, "stop"))
 		{
 			animation.endOfAnimation = cur::EndOfAnimation::stop;
 		}
 	}
-	else if (matches(KEY, "speed_default"))
+	else if (is_match(KEY, "speed_default"))
 	{
 		animation.speedDefault = std::stod(VALUE);
 	}
-	else if (matches(KEY, "speed_slow"))
+	else if (is_match(KEY, "speed_slow"))
 	{
 		animation.speedSlow = std::stod(VALUE);
 	}
@@ -522,7 +266,7 @@ void cur::Program::processLineAnimation(std::string const & line, Search & searc
 	{
 		case Stage::searchingForEndImage:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
 			{
 				std::cout << "Found </image>" << std::endl;
 				search.stage = Stage::none;
@@ -535,7 +279,7 @@ void cur::Program::processLineAnimation(std::string const & line, Search & searc
 		}
 		case Stage::searchingForEndAnimation:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</options>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</options>"))
 			{
 				std::cout << "Found </options>" << std::endl;
 				search.stage = Stage::none;
@@ -547,12 +291,12 @@ void cur::Program::processLineAnimation(std::string const & line, Search & searc
 			break;
 		}
 		default: {
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
 			{
 				std::cout << "Found <image>" << std::endl;
 				search.stage = Stage::searchingForEndImage;
 			}
-			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<options>"))
+			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<options>"))
 			{
 				std::cout << "Found <options>" << std::endl;
 				search.stage = Stage::searchingForEndAnimation;
@@ -577,7 +321,7 @@ void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprit
 	auto const ANIMATION_NAME = line.substr(std::distance(std::begin(line), current));
 	path.append(ANIMATION_NAME);
 
-	if (!matches(path.substr(ANIMATION_NAME.length() - 4, 4), ".txt"))
+	if (!is_match(path.substr(ANIMATION_NAME.length() - 4, 4), ".txt"))
 	{
 		path.append(".txt");
 	}
@@ -588,7 +332,7 @@ void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprit
 	auto it = std::begin(sprites);
 	while (it < std::end(sprites))
 	{
-		if (matches(it->name, SPRITE_NAME))
+		if (is_match(it->name, SPRITE_NAME))
 		{
 			sprite = &*it;
 			break;
@@ -612,7 +356,7 @@ void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprit
 			auto found = false;
 			for (auto const & a : sprite->animations)
 			{
-				if (matches(a.name, ANIMATION_NAME))
+				if (is_match(a.name, ANIMATION_NAME))
 				{
 					found = true;
 					break;
@@ -657,7 +401,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 	{
 		case Stage::searchingForEndBgm:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</bgm>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</bgm>"))
 			{
 				std::cout << "Found </bgm>" << std::endl;
 				search.stage = Stage::none;
@@ -670,7 +414,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 		}
 		case Stage::searchingForEndSfx:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sfx>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sfx>"))
 			{
 				std::cout << "Found </sfx>" << std::endl;
 				search.stage = Stage::none;
@@ -683,7 +427,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 		}
 		case Stage::searchingForEndImage:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
 			{
 				std::cout << "Found </image>" << std::endl;
 				search.stage = Stage::none;
@@ -696,7 +440,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 		}
 		case Stage::searchingForEndAnimation:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sprite>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sprite>"))
 			{
 				std::cout << "Found </sprite>" << std::endl;
 				search.stage = Stage::none;
@@ -709,22 +453,22 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 		}
 		default:
 		{
-			if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
+			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
 			{
 				std::cout << "Found <image>" << std::endl;
 				search.stage = Stage::searchingForEndImage;
 			}
-			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sprite>"))
+			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sprite>"))
 			{
 				std::cout << "Found <sprite>" << std::endl;
 				search.stage = Stage::searchingForEndAnimation;
 			}
-			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<bgm>"))
+			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<bgm>"))
 			{
 				std::cout << "Found <bgm>" << std::endl;
 				search.stage = Stage::searchingForEndBgm;
 			}
-			else if (matches(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sfx>"))
+			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sfx>"))
 			{
 				std::cout << "Found <sfx>" << std::endl;
 				search.stage = Stage::searchingForEndSfx;
@@ -814,52 +558,24 @@ bool cur::Program::loadScenesText(std::filesystem::path const & path, cur::Scene
 bool cur::Program::loadScenes(std::filesystem::path const & path, cur::Scenes & scenes)
 {
 	auto result = bool{ false };
-	auto ifs = std::ifstream(path, std::ios::binary);
+	auto ifs = std::ifstream(path, std::ios::binary, std::ios::in);
 
 	if (ifs.is_open())
 	{
-		try
-		{
-			std::cout << "Trying to open Boost archive" << std::endl;
-			auto ia = boost::archive::binary_iarchive(ifs);
+		std::cout << "Opened archive--trying to load data into game" << std::endl;
+		auto state = bitsery::quickDeserialization<bitsery::InputStreamAdapter>(ifs, scenes);
 
-			std::cout << "Opened archive--trying to load data into game" << std::endl;
-			ia >> scenes;
-
-			std::cout << "Successfully loaded archive" << std::endl;
-			result = true;
-		}
-		catch (boost::archive::archive_exception e)
-		{
-			std::cerr << "Load exception: " << e.what() << std::endl;
-			std::cerr << "Unknown file format" << std::endl;
-
-			result = false;
-		}
-		catch (boost::exception & e)
-		{
-			e;
-			std::cerr << "Unknown file format" << std::endl;
-
-			result = false;
-		}
+		assert(state.first == bitsery::ReaderError::NoError && state.second);
+		std::cout << "Successfully loaded archive" << std::endl;
+		result = true;
 		ifs.close();
 	}
 	else
 	{
-		std::cerr << "Can't open file--does it exist?" << std::endl;
-		result = false;
+		std::cerr << "Load failed -- unable to open file. Does it exist?" << std::endl;
+		return false;
 	}
-
-	if (result)
-	{
-		std::cout << "Load successful" << std::endl;
-	}
-	else
-	{
-		std::cerr << "Load failed" << std::endl;
-	}
-	return result;
+	return false;
 }
 
 bool cur::Program::saveScenes(std::filesystem::path const & path, cur::Scenes const & scenes)
@@ -868,40 +584,28 @@ bool cur::Program::saveScenes(std::filesystem::path const & path, cur::Scenes co
 
 	makeFileDirs(path);
 
-	auto ofs = std::ofstream(path, std::ios::binary);
+	auto ofs = std::ofstream(path, std::ios::binary | std::ios::trunc | std::ios::out);
 
 	if (ofs.is_open())
 	{
-		try
-		{
-			auto oa = boost::archive::binary_oarchive(ofs);
-			oa << scenes;
-			std::cout << "Saving data list" << std::endl;
-			result = true;
-		}
-		catch (boost::archive::archive_exception e)
-		{
-			std::cerr << "Error: " << e.what() << std::endl;
-			result = false;
-		}
+		std::cout << "Saving data list" << std::endl;
+		auto ser = bitsery::Serializer<bitsery::OutputBufferedStreamAdapter>(ofs);
+		ser.object(scenes);
+		//flush to writer
+		ser.adapter().flush();
+
 		ofs.close();
-	}
-	else
-	{
-		std::cerr << "Output file is not open" << std::endl;
-		result = false;
-	}
 
-	if (result)
-	{
 		std::cout << "Save successful" << std::endl;
+		return true;
 	}
 	else
 	{
-		std::cerr << "Save failed" << std::endl;
+		std::cerr << "Save failed - output file is not open" << std::endl;
+		return false;
 	}
 
-	return result;
+	return false;
 }
 
 void cur::Program::convertScenesText(cur::Scenes & scenes)
@@ -935,16 +639,16 @@ void cur::Program::convertScenesText(cur::Scenes & scenes)
 	}
 
 	std::cout << std::endl;
-	assignUniqueIndex(scenes);
+	assign_unique_index(scenes);
 }
 
 int cur::Program::now()
 {
 	std::cout << "Converting scene textures to binary data" << std::endl;
 #ifdef ARCH_X64
-	auto const FILENAME = std::filesystem::path("../data_x64/scene/textures.bin");
+	auto const FILENAME = std::filesystem::path("../data_x64/scene/textures_bitsery.bin");
 #elif defined ARCH_X86
-	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures.bin");
+	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures_bitsery.bin");
 #endif // ARCH_X64
 	auto scenes = cur::Scenes();
 	convertScenesText(scenes);

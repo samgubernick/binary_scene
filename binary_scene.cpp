@@ -3,7 +3,7 @@
 
 #include "program.hpp"
 
-namespace cur = sam::binary;
+namespace cur = sam::binary_data;
 
 #ifdef SAM_IGNORE
 #include <filesystem>

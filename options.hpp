@@ -1,25 +1,24 @@
 
-#ifndef SAM_BINARY_OPTIONS_HPP_INCLUDED
-#define SAM_BINARY_OPTIONS_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_OPTIONS_HPP_INCLUDED
+#define SAM_BINARY_DATA_OPTIONS_HPP_INCLUDED
 #pragma once
 
 #include "option/behavior.hpp"
 #include "option/image_format.hpp"
 
-#include "soil2/soil2.h"
+#include "bitsery/serializer.h"
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
+#include "soil2/soil2.h"
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Options
 		{
 			option::Behavior	behaviorX;
 			option::Behavior	behaviorY;
-			unsigned int		channels;
+			uint8_t				channels;
 			option::ImageFormat	imageFormat;
 
 			Options()
@@ -77,14 +76,14 @@ namespace sam
 				}
 			}
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & behaviorX;
-				ar & behaviorY;
-				ar & channels;
-				ar & imageFormat;
+				s.value1b(behaviorX);
+				s.value1b(behaviorY);
+				s.value1b(channels);
+				s.value1b(imageFormat);
 			}
 		};
 	}

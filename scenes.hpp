@@ -1,29 +1,28 @@
 
-#ifndef SAM_BINARY_SCENES_HPP_INCLUDED
-#define SAM_BINARY_SCENES_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_SCENES_HPP_INCLUDED
+#define SAM_BINARY_DATA_SCENES_HPP_INCLUDED
 #pragma once
 
 #include "scene.hpp"
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/vector.hpp"
+#include "bitsery/serializer.h"
+#include "bitsery/traits/vector.h"
 
 #include <vector>
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Scenes
 		{
 			std::vector<Scene> scenes;
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & scenes;
+				s.container(scenes, 256);
 			}
 		};
 	}

@@ -1,22 +1,22 @@
 
-#ifndef SAM_BINARY_SCENE_HPP_INCLUDED
-#define SAM_BINARY_SCENE_HPP_INCLUDED
+#ifndef SAM_BINARY_DATA_SCENE_HPP_INCLUDED
+#define SAM_BINARY_DATA_SCENE_HPP_INCLUDED
 #pragma once
 
 #include "sound.hpp"
 #include "sprite.hpp"
 #include "texture.hpp"
 
-#include "boost/archive/binary_iarchive.hpp"
-#include "boost/archive/binary_oarchive.hpp"
-#include "boost/serialization/vector.hpp"
+#include "bitsery/serializer.h"
+#include "bitsery/traits/string.h"
+#include "bitsery/traits/vector.h"
 
 #include <string>
 #include <vector>
 
 namespace sam
 {
-	namespace binary
+	namespace binary_data
 	{
 		struct Scene
 		{
@@ -33,15 +33,15 @@ namespace sam
 			{ }
 
 		private:
-			friend class boost::serialization::access;
-			template<class Archive>
-			void serialize(Archive & ar, unsigned int version)
+			friend class bitsery::Access;
+			template<typename S>
+			void serialize(S & s)
 			{
-				ar & name;
-				ar & bgm;
-				ar & sfx;
-				ar & sprites;
-				ar & textures;
+				s.text1b(name, 512);
+				s.container(bgm, 8192);
+				s.container(sfx, 8192);
+				s.container(sprites, 8192);
+				s.container(textures, 8192);
 			}
 		};
 	}
