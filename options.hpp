@@ -20,12 +20,13 @@ namespace sam
 			option::Behavior	behaviorY;
 			uint8_t				channels;
 			option::ImageFormat	imageFormat;
-
+			uint16_t			version;
 			Options()
 				: behaviorX(option::Behavior::center)
 				, behaviorY(option::Behavior::center)
 				, channels(0)
 				, imageFormat(option::ImageFormat::a)
+				, version(0)
 			{ }
 
 			Options(option::Behavior		behaviorX,
@@ -35,6 +36,7 @@ namespace sam
 				, behaviorY(behaviorY)
 				, channels(0)
 				, imageFormat(imageFormat)
+				, version(0)
 			{
 				switch (imageFormat)
 				{
@@ -80,6 +82,7 @@ namespace sam
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.value1b(behaviorX);
 				s.value1b(behaviorY);
 				s.value1b(channels);

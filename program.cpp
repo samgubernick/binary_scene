@@ -646,9 +646,9 @@ int cur::Program::now()
 {
 	std::cout << "Converting scene textures to binary data" << std::endl;
 #ifdef ARCH_X64
-	auto const FILENAME = std::filesystem::path("../data_x64/scene/textures_bitsery.bin");
+	auto const FILENAME = std::filesystem::path("../data/scene/textures.bin");
 #elif defined ARCH_X86
-	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures_bitsery.bin");
+	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures.bin");
 #endif // ARCH_X64
 	auto scenes = cur::Scenes();
 	convertScenesText(scenes);

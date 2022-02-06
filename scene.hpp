@@ -25,11 +25,13 @@ namespace sam
 			std::vector<Sprite> sprites;
 			std::vector<Sound> bgm;
 			std::vector<Sound> sfx;
+			uint16_t version;
 
-			Scene() { }
+			Scene() : version(0) { }
 
 			Scene(std::string name)
 				: name(name)
+				, version(0)
 			{ }
 
 		private:
@@ -37,6 +39,7 @@ namespace sam
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.text1b(name, 512);
 				s.container(bgm, 8192);
 				s.container(sfx, 8192);

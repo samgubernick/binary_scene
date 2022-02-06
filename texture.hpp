@@ -21,9 +21,11 @@ namespace sam
 			Options		options;
 			std::string	hash;
 			uint32_t	id;
+			uint16_t	version;
 
 			Texture()
 				: id(0)
+				, version(0)
 			{ }
 
 			Texture(std::string	name,
@@ -33,6 +35,7 @@ namespace sam
 				, path(path)
 				, options(std::move(options))
 				, id(0)
+				, version(0)
 			{
 				hash = path;
 				hash.append(std::to_string(static_cast<int>(options.imageFormat)))
@@ -44,6 +47,7 @@ namespace sam
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.text1b(name, 512);
 				s.text1b(path, 1024);
 				s.object(options);

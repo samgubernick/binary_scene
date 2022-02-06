@@ -17,11 +17,13 @@ namespace sam
 		struct Scenes
 		{
 			std::vector<Scene> scenes;
+			uint16_t version;
 		private:
 			friend bitsery::Access;
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.container(scenes, 256);
 			}
 		};

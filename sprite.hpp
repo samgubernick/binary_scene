@@ -20,17 +20,20 @@ namespace sam
 		{
 			std::string name;
 			std::vector<Animation> animations;
+			uint16_t version;
 
-			Sprite() { }
+			Sprite() : version(0) { }
 
 			Sprite(std::string name)
 				: name(name)
+				, version(0)
 			{ }
 		private:
 			friend class bitsery::Access;
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.text1b(name, 512);
 				s.container(animations, 512);
 			}

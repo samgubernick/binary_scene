@@ -23,12 +23,14 @@ namespace sam
 			double speedDefault;
 			double speedSlow;
 			EndOfAnimation endOfAnimation;
+			uint16_t version;
 
 			Animation()
 				: endOfAnimation(EndOfAnimation::stop)
 				, name("")
 				, speedDefault(0.0)
 				, speedSlow(0.0)
+				, version(0)
 			{ }
 
 			Animation(std::string name)
@@ -36,6 +38,7 @@ namespace sam
 				, speedDefault(0.0)
 				, speedSlow(0.0)
 				, endOfAnimation(EndOfAnimation::stop)
+				, version(0)
 			{ }
 
 		private:
@@ -43,6 +46,7 @@ namespace sam
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.value1b(endOfAnimation);
 				s.text1b(name, 512);
 				s.value8b(speedDefault);

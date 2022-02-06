@@ -27,10 +27,12 @@ namespace sam
 			std::string	hash;
 			uint32_t	id;
 			Group		group;
+			uint16_t	version;
 
 			Sound()
 				: group(Group::none)
 				, id(0)
+				, version(0)
 			{ }
 
 			Sound(std::string	name,
@@ -40,6 +42,7 @@ namespace sam
 				, path(path)
 				, id(0)
 				, group(group)
+				, version(0)
 			{
 				hash = path;
 			}
@@ -48,6 +51,7 @@ namespace sam
 			template<typename S>
 			void serialize(S & s)
 			{
+				s.value2b(version);
 				s.text1b(name, 512);
 				s.text1b(path, 1024);
 				s.text1b(hash, 1024);
