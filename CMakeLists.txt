@@ -25,7 +25,7 @@ else()
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "binary_data_x86")
 endif() # ARCH_X64
 
-set(LIB_DIR "${CMAKE_SOURCE_DIR}/../libs")
+set(LIB_DIR "${CMAKE_SOURCE_DIR}/lib")
 
 message(STATUS "Lib path: ${LIB_DIR}")
 
@@ -42,7 +42,7 @@ target_compile_features(binary_scene PUBLIC cxx_std_20)
 target_compile_definitions(binary_scene
 	PRIVATE X_WINDOWS
 	)
-	
+
 if(DEFINED ARCH_X64)
 	target_compile_definitions(binary_scene
 		PRIVATE ARCH_X64
@@ -55,7 +55,7 @@ else()
 	message(FATAL_ERROR "***Error: No architecture specified***")
 endif() # ARCH
 
-include_directories("${LIB_DIR}/soil2/current/include/" "${LIB_DIR}/bitsery/bitsery-master/include/")
+include_directories("${LIB_DIR}/")
 
 find_library(
 	soil2
