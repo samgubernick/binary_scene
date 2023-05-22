@@ -13,48 +13,44 @@
 #include <iostream>
 #include <vector>
 
-namespace cur = sam::binary_data;
-
+namespace sam { namespace binary_data {
 namespace
 {
-	
-	constexpr auto const KEY_NAME = size_t{ 0 };
-	constexpr auto const KEY_PATH = size_t{ 1 };
-	constexpr auto const KEY_IMAGE_FORMAT = size_t{ 2 };
-	constexpr auto const KEY_BEHAVIOR_X = size_t{ 3 };
-	constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
+constexpr auto const KEY_NAME = size_t{ 0 };
+constexpr auto const KEY_PATH = size_t{ 1 };
+constexpr auto const KEY_IMAGE_FORMAT = size_t{ 2 };
+constexpr auto const KEY_BEHAVIOR_X = size_t{ 3 };
+constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
 
-	bool isSpacer(char const & c)
+auto isSpacer(char const & c)
+{
+	if (is_match(c, '\t')
+		|| is_match(c, ':')
+		|| is_match(c, '\n'))
 	{
-		if (cur::is_match(c, '\t')
-			|| cur::is_match(c, ':')
-			|| cur::is_match(c, '\n'))
-		{
-			return true;
-		}
+		return true;
+	}
 
+	return false;
+}
+
+auto isValidChar(char const & c)
+{
+	if (is_match(c, '\t')
+		|| is_match(c, ':')
+		|| is_match(c, '\n'))
+	{
 		return false;
 	}
 
-	bool isValidChar(char const & c)
-	{
-		if (cur::is_match(c, '\t')
-			|| cur::is_match(c, ':')
-			|| cur::is_match(c, '\n'))
-		{
-			return false;
-		}
-
-		return true;
-	}
+	return true;
+}
 }
 
-cur::Program::Program()
-{
+Program::Program()
+{ }
 
-}
-
-cur::option::Behavior cur::Program::getBehavior(std::string const & behavior)
+auto Program::getBehavior(std::string const & behavior) -> option::Behavior
 {
 	//std::cout << "Behavior: (" << behavior << ")" << std::endl;
 	if (is_match(behavior, "mirror"))
@@ -77,7 +73,7 @@ cur::option::Behavior cur::Program::getBehavior(std::string const & behavior)
 	return option::Behavior::repeat;
 }
 
-cur::option::ImageFormat cur::Program::getImageFormat(std::string & imageFormat)
+auto Program::getImageFormat(std::string & imageFormat) -> option::ImageFormat
 {
 	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
 	if (is_match(imageFormat, "l") || is_match(imageFormat, "r"))
@@ -112,7 +108,7 @@ cur::option::ImageFormat cur::Program::getImageFormat(std::string & imageFormat)
 	return option::ImageFormat::a;
 }
 
-void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture> & textures, size_t lineIndex)
+auto Program::addTexture(std::string const & line, std::vector<Texture> & textures, size_t lineIndex) -> void
 {
 	std::cout << "Adding animation texture (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
@@ -132,9 +128,9 @@ void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture
 
 	if (items.size() == 5)
 	{
-		auto options = cur::Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
-									getBehavior(items.at(KEY_BEHAVIOR_Y)),
-									getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
+							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
+							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
 
 		textures.emplace_back(items.at(KEY_NAME),
 							  items.at(KEY_PATH),
@@ -148,7 +144,7 @@ void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture
 	}
 }
 
-void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture> & textures)
+auto Program::addTexture(std::string const & line, std::vector<Texture> & textures) -> void
 {
 	//std::cout << "Texture line (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
@@ -167,9 +163,9 @@ void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture
 
 	if (items.size() == 5)
 	{
-		auto options = cur::Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
-									getBehavior(items.at(KEY_BEHAVIOR_Y)),
-									getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
+							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
+							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
 
 		textures.emplace_back(items.at(KEY_NAME),
 							  items.at(KEY_PATH),
@@ -181,7 +177,7 @@ void cur::Program::addTexture(std::string const & line, std::vector<cur::Texture
 	}
 }
 
-void cur::Program::addAnimationOption(std::string const & line, cur::Animation & animation)
+auto Program::addAnimationOption(std::string const & line, Animation & animation) -> void
 {
 	//std::cout << "Adding animation option: (" << line << ")" << std::endl;
 
@@ -203,15 +199,15 @@ void cur::Program::addAnimationOption(std::string const & line, cur::Animation &
 	{
 		if (is_match(VALUE, "reset"))
 		{
-			animation.endOfAnimation = cur::EndOfAnimation::reset;
+			animation.endOfAnimation = EndOfAnimation::reset;
 		}
 		else if (is_match(VALUE, "reverse"))
 		{
-			animation.endOfAnimation = cur::EndOfAnimation::reverse;
+			animation.endOfAnimation = EndOfAnimation::reverse;
 		}
 		else if (is_match(VALUE, "stop"))
 		{
-			animation.endOfAnimation = cur::EndOfAnimation::stop;
+			animation.endOfAnimation = EndOfAnimation::stop;
 		}
 	}
 	else if (is_match(KEY, "speed_default"))
@@ -224,7 +220,7 @@ void cur::Program::addAnimationOption(std::string const & line, cur::Animation &
 	}
 }
 
-void cur::Program::addSound(std::string const & line, std::vector<cur::Sound> & sounds, cur::Sound::Group group)
+auto Program::addSound(std::string const & line, std::vector<Sound> & sounds, Sound::Group group) -> void
 {
 	//std::cout << "Texture line (" << line << ")" << std::endl;
 	auto items = std::vector<std::string>();
@@ -253,7 +249,7 @@ void cur::Program::addSound(std::string const & line, std::vector<cur::Sound> & 
 	}
 }
 
-void cur::Program::processLineAnimation(std::string const & line, Search & search, cur::Animation & animation, size_t lineIndex)
+auto Program::processLineAnimation(std::string const & line, Search & search, Animation & animation, size_t lineIndex) -> void
 {
 	//std::cout << "Line (" << line << ")" << std::endl;
 	auto const BEGIN = std::begin(line);
@@ -306,7 +302,7 @@ void cur::Program::processLineAnimation(std::string const & line, Search & searc
 	}
 }
 
-void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprite> & sprites)
+auto Program::addAnimation(std::string const & line, std::vector<Sprite> & sprites) -> void
 {
 	auto path = std::string("../text/anim/");
 
@@ -328,7 +324,7 @@ void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprit
 
 	std::cout << "Adding animation: Sprite name (" << SPRITE_NAME << "), animation name (" << ANIMATION_NAME << "), line (" << line << ")" << std::endl;
 
-	cur::Sprite * sprite = nullptr;
+	Sprite * sprite = nullptr;
 	auto it = std::begin(sprites);
 	while (it < std::end(sprites))
 	{
@@ -388,7 +384,7 @@ void cur::Program::addAnimation(std::string const & line, std::vector<cur::Sprit
 	auto & c = sprite;
 }
 
-void cur::Program::processLine(std::string const & line, Search & search, cur::Scene & scene)
+auto Program::processLine(std::string const & line, Search & search, Scene & scene) -> void
 {
 	//std::cout << "Line (" << line << ")" << std::endl;
 	auto const BEGIN = std::begin(line);
@@ -408,7 +404,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 			}
 			else
 			{
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm, cur::Sound::Group::bgm);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm, Sound::Group::bgm);
 			}
 			break;
 		}
@@ -421,7 +417,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 			}
 			else
 			{
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx, cur::Sound::Group::sfx);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx, Sound::Group::sfx);
 			}
 			break;
 		}
@@ -478,7 +474,7 @@ void cur::Program::processLine(std::string const & line, Search & search, cur::S
 	}
 }
 
-bool cur::Program::makeFileDirs(std::filesystem::path const & file)
+auto Program::makeFileDirs(std::filesystem::path const & file) -> bool
 {
 	auto fullPath = std::string();
 	if (!std::filesystem::exists(file.parent_path()))
@@ -498,7 +494,7 @@ bool cur::Program::makeFileDirs(std::filesystem::path const & file)
 					try
 					{
 						std::filesystem::create_directory(fullPath);
-						std::cout << "Successfuly created directory: " << fullPath.c_str() << std::endl;
+						std::cout << "Successfully created directory: " << fullPath.c_str() << std::endl;
 					}
 					catch (std::filesystem::filesystem_error e)
 					{
@@ -521,7 +517,7 @@ bool cur::Program::makeFileDirs(std::filesystem::path const & file)
 	return true;
 }
 
-bool cur::Program::loadScenesText(std::filesystem::path const & path, cur::Scenes & scenes)
+auto Program::loadScenesText(std::filesystem::path const & path, Scenes & scenes) -> bool
 {
 	std::cout << "Filename: " << path.filename().string() << "		" << path.string() << std::endl
 		<< "-								-" << std::endl;
@@ -555,7 +551,7 @@ bool cur::Program::loadScenesText(std::filesystem::path const & path, cur::Scene
 	return false;
 }
 
-bool cur::Program::loadScenes(std::filesystem::path const & path, cur::Scenes & scenes)
+auto Program::loadScenes(std::filesystem::path const & path, Scenes & scenes) -> bool
 {
 	auto result = bool{ false };
 	auto ifs = std::ifstream(path, std::ios::binary, std::ios::in);
@@ -578,7 +574,7 @@ bool cur::Program::loadScenes(std::filesystem::path const & path, cur::Scenes & 
 	return false;
 }
 
-bool cur::Program::saveScenes(std::filesystem::path const & path, cur::Scenes const & scenes)
+auto Program::saveScenes(std::filesystem::path const & path, Scenes const & scenes) -> bool
 {
 	auto result = bool{ false };
 
@@ -608,7 +604,7 @@ bool cur::Program::saveScenes(std::filesystem::path const & path, cur::Scenes co
 	return false;
 }
 
-void cur::Program::convertScenesText(cur::Scenes & scenes)
+auto Program::convertScenesText(Scenes & scenes) -> void
 {
 	auto textFiles = std::vector<std::filesystem::path>();
 	if (std::filesystem::exists("../text/scene/"))
@@ -642,7 +638,7 @@ void cur::Program::convertScenesText(cur::Scenes & scenes)
 	assign_unique_index(scenes);
 }
 
-int cur::Program::now()
+auto Program::processScenes() -> int
 {
 	std::cout << "Converting scene textures to binary data" << std::endl;
 #ifdef ARCH_X64
@@ -650,14 +646,10 @@ int cur::Program::now()
 #elif defined ARCH_X86
 	auto const FILENAME = std::filesystem::path("../data_x86/scene/textures.bin");
 #endif // ARCH_X64
-	auto scenes = cur::Scenes();
+	auto scenes = Scenes();
 	convertScenesText(scenes);
 	saveScenes(FILENAME, scenes);
 
-	std::cout << std::endl << "Press any key to exit..." << std::endl;
-	for (auto line = std::string(); std::getline(std::cin, line);)
-	{
-		break;
-	}
 	return EXIT_SUCCESS;
 }
+}}

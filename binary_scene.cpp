@@ -2,8 +2,9 @@
 #include "scenes.hpp"
 
 #include "program.hpp"
+#include "text_maker.hpp"
 
-namespace cur = sam::binary_data;
+namespace sam { namespace binary_data {
 
 #ifdef SAM_IGNORE
 #include <filesystem>
@@ -771,7 +772,7 @@ void convertScenesText(cur::Scenes & scenes) {
 	assignUniqueIndex(scenes);
 }
 
-int main()
+int main(int argc, char * argv[])
 {
 	std::cout << "Converting scene textures to binary data" << std::endl;
 #ifdef ARCH_X64
@@ -791,8 +792,39 @@ int main()
 }
 #endif // SAM_IGNORE
 
-int main()
+int processData(char const * argument)
 {
-	auto program = cur::Program();
-	return program.now();
+	if (std::string(argument).compare("strings") == 0)
+	{
+		std::cout << std::endl << "Processing strings..." << std::endl;
+		return TextMaker().processStrings();
+	}
+	else if (std::string(argument).compare("scenes") == 0)
+	{
+		std::cout << std::endl << "Processing scenes..." << std::endl;
+		//return sam::binary_data::Program().processScenes();
+	}
+	return EXIT_SUCCESS;
+}
+}}
+
+int main(int argc, char * argv[])
+{
+	auto result = 0;
+	sam::binary_data::TextMaker().processStrings();
+	//sam::binary_data::Program().processScenes();
+	if (argc < 2)
+	{
+		std::cout << std::endl << "Missing argument. Run with either scenes or strings." << std::endl;
+	}
+	else
+	{
+		result = sam::binary_data::processData(argv[1]);
+	}
+	std::cout << std::endl << "Press any key to exit..." << std::endl;
+	for (auto line = std::string(); std::getline(std::cin, line);)
+	{
+		break;
+	}
+	return result;
 }

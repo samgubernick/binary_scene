@@ -4,6 +4,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
+set(ARCH "x64")
 if(${ARCH} STREQUAL "x64")
 	message(STATUS "Using x64")
 	set(ARCH_X64 TRUE)
@@ -17,7 +18,7 @@ endif() # ARCH
 project ("binary_scene")
 
 # Add source to this project's executable.
-add_executable (binary_scene "binary_scene.cpp"  "program.cpp" "assign_unique_index.hpp" "assign_unique_index.cpp" "is_match.hpp" "is_match.cpp")
+add_executable (binary_scene "binary_scene.cpp"  "program.cpp" "assign_unique_index.hpp" "assign_unique_index.cpp" "is_match.hpp" "is_match.cpp" "text_maker.cpp" "get_text_id.cpp")
 
 if (DEFINED ARCH_X64)
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "binary_data_x64")
@@ -25,7 +26,7 @@ else()
 	set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "binary_data_x86")
 endif() # ARCH_X64
 
-set(LIB_DIR "${CMAKE_SOURCE_DIR}/../libs")
+set(LIB_DIR "${CMAKE_SOURCE_DIR}/../../../libs")
 
 message(STATUS "Lib path: ${LIB_DIR}")
 
@@ -55,7 +56,7 @@ else()
 	message(FATAL_ERROR "***Error: No architecture specified***")
 endif() # ARCH
 
-include_directories("${LIB_DIR}/soil2/current/include/" "${LIB_DIR}/bitsery/bitsery-master/include/")
+include_directories("${LIB_DIR}/soil2/SOIL2-master/src/" "${LIB_DIR}/bitsery/bitsery-master/include/")
 
 find_library(
 	soil2

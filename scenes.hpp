@@ -10,23 +10,23 @@
 
 #include <vector>
 
-namespace sam
+namespace sam { namespace binary_data {
+struct Scenes
 {
-	namespace binary_data
+	std::vector<Scene> scenes;
+	uint16_t version;
+
+	Scenes()
+		: version(0)
+	{}
+private:
+	friend bitsery::Access;
+	template<typename S>
+	void serialize(S & s)
 	{
-		struct Scenes
-		{
-			std::vector<Scene> scenes;
-			uint16_t version;
-		private:
-			friend bitsery::Access;
-			template<typename S>
-			void serialize(S & s)
-			{
-				s.value2b(version);
-				s.container(scenes, 256);
-			}
-		};
+		s.value2b(version);
+		s.container(scenes, 256);
 	}
-}
+};
+}}
 #endif // INCLUDE_GUARD
