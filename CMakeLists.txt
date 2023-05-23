@@ -31,9 +31,9 @@ set(LIB_DIR "${CMAKE_SOURCE_DIR}/libs")
 message(STATUS "Lib path: ${LIB_DIR}")
 
 if(DEFINED ARCH_X64)
-	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x64/debug/")
+	set(SOIL2_PATH "${LIB_DIR}/SOIL2/make/windows/x64/debug/")
 elseif(DEFINED ARCH_X86)
-	set(SOIL2_PATH "${LIB_DIR}/soil2/SOIL2-master/make/windows/x86/debug/")
+	set(SOIL2_PATH "${LIB_DIR}/SOIL2/make/windows/x86/debug/")
 else()
 	message(FATAL_ERROR "***Error: No environment selected***")
 endif() # ARCH
@@ -56,7 +56,7 @@ else()
 	message(FATAL_ERROR "***Error: No architecture specified***")
 endif() # ARCH
 
-include_directories("${LIB_DIR}/SOIL2-master/src/" "${LIB_DIR}/bitsery-master/include/")
+include_directories("${LIB_DIR}/SOIL2/src/" "${LIB_DIR}/bitsery/include/")
 
 find_library(
 	soil2
