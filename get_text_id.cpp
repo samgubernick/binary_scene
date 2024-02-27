@@ -13,7 +13,9 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "options") return Id::options;
 	if (name == "pause") return Id::pause;
 	if (name == "play") return Id::play;
+	if (name == "themeEditor") return Id::themeEditor;
 	if (name == "balloons") return Id::balloons;
+	if (name == "buttonsLevel") return Id::buttonsLevel;
 	if (name == "platform") return Id::platform;
 	if (name == "shooter") return Id::shooter;
 	if (name == "back") return Id::back;
@@ -22,6 +24,7 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "custom") return Id::custom;
 	if (name == "customize") return Id::customize;
 	if (name == "enterName") return Id::enterName;
+	if (name == "example") return Id::example;
 	if (name == "loading") return Id::loading;
 	if (name == "max") return Id::max;
 	if (name == "maximum") return Id::maximum;
@@ -31,10 +34,12 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "no") return Id::no;
 	if (name == "off") return Id::off;
 	if (name == "on") return Id::on;
+	if (name == "preview") return Id::preview;
 	if (name == "profileName") return Id::profileName;
 	if (name == "restart") return Id::restart;
 	if (name == "resume") return Id::resume;
 	if (name == "themeCurrent") return Id::themeCurrent;
+	if (name == "value") return Id::value;
 	if (name == "yes") return Id::yes;
 	if (name == "action") return Id::action;
 	if (name == "audio") return Id::audio;
@@ -79,10 +84,28 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "confirmLanguage") return Id::confirmLanguage;
 	if (name == "languageSelector") return Id::languageSelector;
 	if (name == "backArrow") return Id::backArrow;
+	if (name == "forwardArrow") return Id::forwardArrow;
 	if (name == "minusSign") return Id::minusSign;
 	if (name == "plusSign") return Id::plusSign;
 	if (name == "checked") return Id::checked;
 	if (name == "unchecked") return Id::unchecked;
+	if (name == "background") return Id::background;
+	if (name == "onBackground") return Id::onBackground;
+	if (name == "onBackgroundAccent") return Id::onBackgroundAccent;
+	if (name == "onPrimary") return Id::onPrimary;
+	if (name == "onPrimaryAccent") return Id::onPrimaryAccent;
+	if (name == "onSecondary") return Id::onSecondary;
+	if (name == "onSecondaryAccent") return Id::onSecondaryAccent;
+	if (name == "onSurface") return Id::onSurface;
+	if (name == "onSurfaceAccent") return Id::onSurfaceAccent;
+	if (name == "primary") return Id::primary;
+	if (name == "primaryVariant") return Id::primaryVariant;
+	if (name == "secondary") return Id::secondary;
+	if (name == "secondaryVariant") return Id::secondaryVariant;
+	if (name == "surface") return Id::surface;
+	if (name == "currentColor") return Id::currentColor;
+	if (name == "newColor") return Id::newColor;
+	if (name == "selectColor") return Id::selectColor;
 	else return Id::none;
 }
 }}
