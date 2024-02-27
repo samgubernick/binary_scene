@@ -802,7 +802,7 @@ int processData(char const * argument)
 	else if (std::string(argument).compare("scenes") == 0)
 	{
 		std::cout << std::endl << "Processing scenes..." << std::endl;
-		//return sam::binary_data::Program().processScenes();
+		return sam::binary_data::Program().processScenes();
 	}
 	return EXIT_SUCCESS;
 }
@@ -811,7 +811,7 @@ int processData(char const * argument)
 int main(int argc, char * argv[])
 {
 	auto result = 0;
-	sam::binary_data::TextMaker().processStrings();
+	//sam::binary_data::TextMaker().processStrings();
 	//sam::binary_data::Program().processScenes();
 	if (argc < 2)
 	{
