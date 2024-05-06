@@ -13,7 +13,7 @@
 #include <iostream>
 #include <vector>
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 namespace
 {
 constexpr auto const KEY_NAME = size_t{ 0 };
@@ -55,22 +55,22 @@ auto Program::getBehavior(std::string const & behavior) -> option::Behavior
 	//std::cout << "Behavior: (" << behavior << ")" << std::endl;
 	if (is_match(behavior, "mirror"))
 	{
-		return option::Behavior::mirror;
+		return option::Behavior::Mirror;
 	}
 	else if (is_match(behavior, "stretch"))
 	{
-		return option::Behavior::stretch;
+		return option::Behavior::Stretch;
 	}
 	else if (is_match(behavior, "repeat"))
 	{
-		return option::Behavior::repeat;
+		return option::Behavior::Repeat;
 	}
 	else if (is_match(behavior, "center"))
 	{
-		return option::Behavior::center;
+		return option::Behavior::Center;
 	}
 
-	return option::Behavior::repeat;
+	return option::Behavior::Repeat;
 }
 
 auto Program::getImageFormat(std::string & imageFormat) -> option::ImageFormat
@@ -652,4 +652,4 @@ auto Program::processScenes() -> int
 
 	return EXIT_SUCCESS;
 }
-}}
+}
