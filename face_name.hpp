@@ -6,13 +6,12 @@
 // required for uint_8
 #include <cstdint>
 
-namespace sam { namespace binary_data
-{
+namespace sam::binary_data {
 enum class FaceName : uint8_t
 {
-	none,
-	primary,
-	secondary,
+	None,
+	Primary,
+	Secondary,
 };
-}}
+}
 #endif // INCLUDE_GUARD

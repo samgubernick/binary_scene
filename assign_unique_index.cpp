@@ -6,9 +6,8 @@
 
 #include <iostream>
 
-namespace cur = sam::binary_data;
-
-void cur::assign_unique_index(cur::Scenes & scenes)
+namespace sam::binary_data {
+auto assign_unique_index(Scenes & scenes) -> void
 {
 	auto id = uint32_t{ 0 };
 
@@ -256,4 +255,5 @@ void cur::assign_unique_index(cur::Scenes & scenes)
 	}
 
 	std::cout << "Assigned " << id << " ids to textures in " << scenes.scenes.size() << " scenes" << std::endl;
+}
 }

@@ -4,8 +4,7 @@
 #include "program.hpp"
 #include "text_maker.hpp"
 
-namespace sam { namespace binary_data {
-
+namespace sam::binary_data {
 #ifdef SAM_IGNORE
 #include <filesystem>
 #include <fstream>
@@ -471,7 +470,7 @@ void addAnimation(std::string const & line, std::vector<cur::Sprite> & sprites) 
 	auto const END = std::end(line);
 	auto current = std::begin(line);
 	auto next = std::find_if(current, END, isSpacer);
-	
+
 	auto const SPRITE_NAME = line.substr(0, std::distance(current, next));
 
 	current = std::find_if(next, END, isValidChar);
@@ -495,7 +494,7 @@ void addAnimation(std::string const & line, std::vector<cur::Sprite> & sprites) 
 		it = std::next(it);
 	}
 
-	if (sprite == nullptr) {								
+	if (sprite == nullptr) {
 		sprite = &sprites.emplace_back(SPRITE_NAME);
 	}
 
@@ -792,7 +791,7 @@ int main(int argc, char * argv[])
 }
 #endif // SAM_IGNORE
 
-int processData(char const * argument)
+auto processData(char const * argument) -> int
 {
 	if (std::string(argument).compare("strings") == 0)
 	{
@@ -806,9 +805,12 @@ int processData(char const * argument)
 	}
 	return EXIT_SUCCESS;
 }
-}}
+}
 
-int main(int argc, char * argv[])
+auto main(
+	int argc,
+	char * argv[]
+) -> int
 {
 	auto result = 0;
 	//sam::binary_data::TextMaker().processStrings();

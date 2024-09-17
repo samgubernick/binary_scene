@@ -14,39 +14,35 @@
 #include <string>
 #include <vector>
 
-namespace sam
+namespace sam::binary_data {
+struct Scene
 {
-	namespace binary_data
+public:
+	Scene() : version{0} { }
+
+	Scene(std::string name)
+		: name{name}
+		, version{0}
+	{ }
+public:
+	std::string name;
+	std::vector<Texture> textures;
+	std::vector<Sprite> sprites;
+	std::vector<Sound> bgm;
+	std::vector<Sound> sfx;
+	uint16_t version;
+private:
+	friend class bitsery::Access;
+	template<typename S>
+	auto serialize(S & s)
 	{
-		struct Scene
-		{
-			std::string name;
-			std::vector<Texture> textures;
-			std::vector<Sprite> sprites;
-			std::vector<Sound> bgm;
-			std::vector<Sound> sfx;
-			uint16_t version;
-
-			Scene() : version(0) { }
-
-			Scene(std::string name)
-				: name(name)
-				, version(0)
-			{ }
-
-		private:
-			friend class bitsery::Access;
-			template<typename S>
-			void serialize(S & s)
-			{
-				s.value2b(version);
-				s.text1b(name, 512);
-				s.container(bgm, 8192);
-				s.container(sfx, 8192);
-				s.container(sprites, 8192);
-				s.container(textures, 8192);
-			}
-		};
+		s.value2b(version);
+		s.text1b(name, 512);
+		s.container(bgm, 8192);
+		s.container(sfx, 8192);
+		s.container(sprites, 8192);
+		s.container(textures, 8192);
 	}
+};
 }
 #endif // INCLUDE_GUARD

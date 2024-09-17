@@ -9,7 +9,7 @@
 #include <iostream>
 #include <vector>
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 class TextMaker
 {
 public:
@@ -28,5 +28,5 @@ private:
 private:
 	std::vector<std::filesystem::path> languageFiles;
 };
-}}
+}
 #endif // INCLUDE_GUARD

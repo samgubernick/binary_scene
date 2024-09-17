@@ -8,27 +8,30 @@
 #include "bitsery/traits/string.h"
 #include "bitsery/traits/vector.h"
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 struct Language
 {
+	Language()
+		: id{0}
+		, version{0}
+	{}
+
+	Language(
+		std::string name,
+		std::string text
+	)
+		: name{name}
+		, text{text}
+		, id{0}
+		, version{0}
+	{}
+public:
 	std::string name;
 	std::string text;
 	std::vector<String> strings;
-	uint32_t	id;
-	std::string	hash;
-	uint16_t	version;
-
-	Language()
-		: id(0)
-		, version(0)
-	{}
-
-	Language(std::string name, std::string text)
-		: name(name)
-		, text(text)
-		, id(0)
-		, version(0)
-	{}
+	uint32_t id;
+	std::string hash;
+	uint16_t version;
 private:
 	friend class bitsery::Access;
 	template<typename S>
@@ -42,5 +45,5 @@ private:
 		s.value4b(id);
 	}
 };
-}}
+}
 #endif // INCLUDE_GUARD

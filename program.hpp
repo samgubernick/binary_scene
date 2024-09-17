@@ -10,21 +10,21 @@
 #include <iostream>
 #include <vector>
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 class Program
 {
 public:
 	Program();
-
+public:
 	int processScenes();
 private:
 	enum class Stage
 	{
-		none,
-		searchingForEndAnimation,
-		searchingForEndBgm,
-		searchingForEndImage,
-		searchingForEndSfx,
+		None,
+		SearchingForEndAnimation,
+		SearchingForEndBgm,
+		SearchingForEndImage,
+		SearchingForEndSfx,
 	};
 
 	struct Search
@@ -32,12 +32,12 @@ private:
 		Stage stage;
 
 		Search()
-			: stage(Stage::none)
+			: stage{Stage::None}
 		{ }
 	};
 
-	option::Behavior getBehavior(std::string const & behavior);
-	option::ImageFormat getImageFormat(std::string & imageFormat);
+	auto getBehavior(std::string const & behavior) -> option::Behavior;
+	auto getImageFormat(std::string & imageFormat) -> option::ImageFormat;
 	void assignUniqueIndex(Scenes & scenes);
 	void addTexture(std::string const & line, std::vector<Texture> & textures, size_t lineIndex);
 	void addTexture(std::string const & line, std::vector<Texture> & textures);
@@ -52,5 +52,5 @@ private:
 	bool saveScenes(std::filesystem::path const & path, Scenes const & scenes);
 	void convertScenesText(Scenes & scenes);
 };
-}}
+}
 #endif // INCLUDE_GUARD

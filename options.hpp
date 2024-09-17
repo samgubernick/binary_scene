@@ -13,17 +13,13 @@
 namespace sam::binary_data {
 struct Options
 {
-	option::Behavior behaviorX;
-	option::Behavior behaviorY;
-	uint8_t channels;
-	option::ImageFormat imageFormat;
-	uint16_t version;
+public:
 	Options()
-		: behaviorX(option::Behavior::Center)
-		, behaviorY(option::Behavior::Center)
-		, channels(0)
-		, imageFormat(option::ImageFormat::a)
-		, version(0)
+		: behaviorX{option::Behavior::Center}
+		, behaviorY{option::Behavior::Center}
+		, channels{0}
+		, imageFormat{option::ImageFormat::A}
+		, version{0}
 	{ }
 
 	Options(
@@ -31,24 +27,31 @@ struct Options
 		option::Behavior behaviorY,
 		option::ImageFormat imageFormat
 	)
-		: behaviorX(behaviorX)
-		, behaviorY(behaviorY)
-		, channels(0)
-		, imageFormat(imageFormat)
-		, version(0)
+		: behaviorX{behaviorX}
+		, behaviorY{behaviorY}
+		, channels{0}
+		, imageFormat{imageFormat}
+		, version{0}
 	{
 		switch (imageFormat)
 		{
-			case option::ImageFormat::a: channels = SOIL_LOAD_L;
-			break; case option::ImageFormat::l: channels = SOIL_LOAD_L;
-			break; case option::ImageFormat::la: channels = SOIL_LOAD_LA;
-			break; case option::ImageFormat::rgb: channels = SOIL_LOAD_RGB;
-			break; case option::ImageFormat::rgba: channels = SOIL_LOAD_RGB;
-			break; case option::ImageFormat::srgb: channels = SOIL_LOAD_RGB;
-			break; case option::ImageFormat::srgba: channels = SOIL_LOAD_RGB;
+			case option::ImageFormat::A: channels = SOIL_LOAD_L;
+			break; case option::ImageFormat::L: channels = SOIL_LOAD_L;
+			break; case option::ImageFormat::La: channels = SOIL_LOAD_LA;
+			break; case option::ImageFormat::Rga: channels = SOIL_LOAD_RGB;
+			break; case option::ImageFormat::Rgb: channels = SOIL_LOAD_RGB;
+			break; case option::ImageFormat::Rgba: channels = SOIL_LOAD_RGB;
+			break; case option::ImageFormat::Srgb: channels = SOIL_LOAD_RGB;
+			break; case option::ImageFormat::Srgba: channels = SOIL_LOAD_RGB;
 			break;
 		}
 	}
+public:
+	option::Behavior behaviorX;
+	option::Behavior behaviorY;
+	uint8_t channels;
+	option::ImageFormat imageFormat;
+	uint16_t version;
 private:
 	friend class bitsery::Access;
 	template<typename S>

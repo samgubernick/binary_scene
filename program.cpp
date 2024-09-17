@@ -78,34 +78,38 @@ auto Program::getImageFormat(std::string & imageFormat) -> option::ImageFormat
 	//std::cout << "Image format: (" << imageFormat << ")" << std::endl;
 	if (is_match(imageFormat, "l") || is_match(imageFormat, "r"))
 	{
-		return option::ImageFormat::l;
+		return option::ImageFormat::L;
 	}
 	else if (is_match(imageFormat, "a"))
 	{
-		return option::ImageFormat::a;
+		return option::ImageFormat::A;
 	}
 	else if (is_match(imageFormat, "la"))
 	{
-		return option::ImageFormat::la;
+		return option::ImageFormat::La;
+	}
+	else if (is_match(imageFormat, "rga"))
+	{
+		return option::ImageFormat::Rga;
 	}
 	else if (is_match(imageFormat, "rgb"))
 	{
-		return option::ImageFormat::rgb;
+		return option::ImageFormat::Rgb;
 	}
 	else if (is_match(imageFormat, "rgba"))
 	{
-		return option::ImageFormat::rgba;
+		return option::ImageFormat::Rgba;
 	}
 	else if (is_match(imageFormat, "srgb"))
 	{
-		return option::ImageFormat::srgb;
+		return option::ImageFormat::Srgb;
 	}
 	else if (is_match(imageFormat, "srgba"))
 	{
-		return option::ImageFormat::srgba;
+		return option::ImageFormat::Srgba;
 	}
 
-	return option::ImageFormat::a;
+	return option::ImageFormat::A;
 }
 
 auto Program::addTexture(std::string const & line, std::vector<Texture> & textures, size_t lineIndex) -> void
@@ -128,13 +132,17 @@ auto Program::addTexture(std::string const & line, std::vector<Texture> & textur
 
 	if (items.size() == 5)
 	{
-		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
-							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
-							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+		auto options = Options(
+			getBehavior(items.at(KEY_BEHAVIOR_X)),
+			getBehavior(items.at(KEY_BEHAVIOR_Y)),
+			getImageFormat(items.at(KEY_IMAGE_FORMAT))
+		);
 
-		textures.emplace_back(items.at(KEY_NAME),
-							  items.at(KEY_PATH),
-							  std::move(options));
+		textures.emplace_back(
+			items.at(KEY_NAME),
+			items.at(KEY_PATH),
+			std::move(options)
+		);
 
 		std::cout << "Successfully added animation texture" << std::endl;
 	}
@@ -199,15 +207,15 @@ auto Program::addAnimationOption(std::string const & line, Animation & animation
 	{
 		if (is_match(VALUE, "reset"))
 		{
-			animation.endOfAnimation = EndOfAnimation::reset;
+			animation.endOfAnimation = EndOfAnimation::Reset;
 		}
 		else if (is_match(VALUE, "reverse"))
 		{
-			animation.endOfAnimation = EndOfAnimation::reverse;
+			animation.endOfAnimation = EndOfAnimation::Reverse;
 		}
 		else if (is_match(VALUE, "stop"))
 		{
-			animation.endOfAnimation = EndOfAnimation::stop;
+			animation.endOfAnimation = EndOfAnimation::Stop;
 		}
 	}
 	else if (is_match(KEY, "speed_default"))
@@ -260,12 +268,12 @@ auto Program::processLineAnimation(std::string const & line, Search & search, An
 
 	switch (search.stage)
 	{
-		case Stage::searchingForEndImage:
+		case Stage::SearchingForEndImage:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
 			{
 				std::cout << "Found </image>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
@@ -273,12 +281,12 @@ auto Program::processLineAnimation(std::string const & line, Search & search, An
 			}
 			break;
 		}
-		case Stage::searchingForEndAnimation:
+		case Stage::SearchingForEndAnimation:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</options>"))
 			{
 				std::cout << "Found </options>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
@@ -290,12 +298,12 @@ auto Program::processLineAnimation(std::string const & line, Search & search, An
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
 			{
 				std::cout << "Found <image>" << std::endl;
-				search.stage = Stage::searchingForEndImage;
+				search.stage = Stage::SearchingForEndImage;
 			}
 			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<options>"))
 			{
 				std::cout << "Found <options>" << std::endl;
-				search.stage = Stage::searchingForEndAnimation;
+				search.stage = Stage::SearchingForEndAnimation;
 			}
 			break;
 		}
@@ -395,38 +403,38 @@ auto Program::processLine(std::string const & line, Search & search, Scene & sce
 
 	switch (search.stage)
 	{
-		case Stage::searchingForEndBgm:
+		case Stage::SearchingForEndBgm:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</bgm>"))
 			{
 				std::cout << "Found </bgm>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm, Sound::Group::bgm);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.bgm, Sound::Group::Bgm);
 			}
 			break;
 		}
-		case Stage::searchingForEndSfx:
+		case Stage::SearchingForEndSfx:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sfx>"))
 			{
 				std::cout << "Found </sfx>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
-				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx, Sound::Group::sfx);
+				addSound(line.substr(std::distance(BEGIN, firstCharacter)), scene.sfx, Sound::Group::Sfx);
 			}
 			break;
 		}
-		case Stage::searchingForEndImage:
+		case Stage::SearchingForEndImage:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</image>"))
 			{
 				std::cout << "Found </image>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
@@ -434,12 +442,12 @@ auto Program::processLine(std::string const & line, Search & search, Scene & sce
 			}
 			break;
 		}
-		case Stage::searchingForEndAnimation:
+		case Stage::SearchingForEndAnimation:
 		{
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "</sprite>"))
 			{
 				std::cout << "Found </sprite>" << std::endl;
-				search.stage = Stage::none;
+				search.stage = Stage::None;
 			}
 			else
 			{
@@ -452,22 +460,22 @@ auto Program::processLine(std::string const & line, Search & search, Scene & sce
 			if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<image>"))
 			{
 				std::cout << "Found <image>" << std::endl;
-				search.stage = Stage::searchingForEndImage;
+				search.stage = Stage::SearchingForEndImage;
 			}
 			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sprite>"))
 			{
 				std::cout << "Found <sprite>" << std::endl;
-				search.stage = Stage::searchingForEndAnimation;
+				search.stage = Stage::SearchingForEndAnimation;
 			}
 			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<bgm>"))
 			{
 				std::cout << "Found <bgm>" << std::endl;
-				search.stage = Stage::searchingForEndBgm;
+				search.stage = Stage::SearchingForEndBgm;
 			}
 			else if (is_match(line.substr(std::distance(BEGIN, firstCharacter), std::distance(firstCharacter, lastCharacter)), "<sfx>"))
 			{
 				std::cout << "Found <sfx>" << std::endl;
-				search.stage = Stage::searchingForEndSfx;
+				search.stage = Stage::SearchingForEndSfx;
 			}
 			break;
 		}
@@ -529,7 +537,7 @@ auto Program::loadScenesText(std::filesystem::path const & path, Scenes & scenes
 		auto const FILENAME = path.filename().string().substr(0, path.filename().string().size() - path.extension().string().size());
 		auto & scene = scenes.scenes.emplace_back(FILENAME);
 		auto search = Search();
-		search.stage = Stage::none;
+		search.stage = Stage::None;
 		while (std::getline(ifs, line))
 		{
 			if (!line.empty())

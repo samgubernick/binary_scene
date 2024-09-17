@@ -14,7 +14,7 @@
 #include <iostream>
 #include <vector>
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 namespace
 {
 constexpr auto const PATH_STRINGS = "../../../../kurt/text/strings/";
@@ -109,17 +109,21 @@ auto TextMaker::processStrings() -> int
 	auto languages = Languages();
 	convertStrings(languages);
 	std::cout << "Enums:" << std::endl << std::endl;
-	std::cout << "none," << std::endl;
+	std::cout << "None," << std::endl;
 	for (auto const & s : languages.list.front().strings)
 	{
-		std::cout << s.name << "," << std::endl;
+		auto correctedName = std::string{s.name};
+		correctedName.front() = std::toupper(correctedName.front());
+		std::cout << correctedName << "," << std::endl;
 	}
 	std::cout << std::endl << "Enum to string converter:" << std::endl;
 	for (auto const & s : languages.list.front().strings)
 	{
-		std::cout << "if (name == \"" << s.name << "\") return Id::" << s.name << "; " << std::endl;
+		auto correctedName = std::string{s.name};
+		correctedName.front() = std::toupper(correctedName.front());
+		std::cout << "if (name == \"" << s.name << "\") return Id::" << correctedName << "; " << std::endl;
 	}
-	std::cout << "else return Id::none;" << std::endl;
+	std::cout << "else return Id::None;" << std::endl;
 	std::cout << std::endl;
 	save(FILENAME, languages);
 
@@ -277,14 +281,14 @@ auto TextMaker::addString(std::vector<String> & strings, std::string const & lin
 
 	if (items.size() >= 4)
 	{
-		auto faceName = FaceName::none;
+		auto faceName = FaceName::None;
 		if (is_match(items.at(KEY_FACE_NAME), "primary"))
 		{
-			faceName = FaceName::primary;
+			faceName = FaceName::Primary;
 		}
 		else if (is_match(items.at(KEY_FACE_NAME), "secondary"))
 		{
-			faceName = FaceName::secondary;
+			faceName = FaceName::Secondary;
 		}
 
 		auto & faceSizeString = items.at(KEY_FACE_SIZE);
@@ -299,11 +303,13 @@ auto TextMaker::addString(std::vector<String> & strings, std::string const & lin
 
 		std::cout << "Data: " << items.at(KEY_NAME) << ", " << items.at(KEY_FACE_NAME) << ", " << faceSize << ", " << items.at(KEY_TEXT) << std::endl;
 
-		strings.emplace_back(items.at(KEY_NAME),
-							 faceName,
-							 faceSize,
-							 items.at(KEY_TEXT),
-							 getTextId(items.at(KEY_NAME)));
+		strings.emplace_back(
+			items.at(KEY_NAME),
+			faceName,
+			faceSize,
+			items.at(KEY_TEXT),
+			getTextId(items.at(KEY_NAME))
+		);
 	}
 	else
 	{
@@ -368,4 +374,4 @@ auto TextMaker::save(std::filesystem::path const & path, Languages const & langu
 
 	return false;
 }
-}}
+}

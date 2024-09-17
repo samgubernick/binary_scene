@@ -8,57 +8,54 @@
 
 #include <string>
 
-namespace sam
+namespace sam::binary_data {
+struct Sound
 {
-	namespace binary_data
+	enum class Group:uint8_t
 	{
-		struct Sound
-		{
-			enum class Group:uint8_t
-			{
-				bgm,
-				custom,
-				sfx,
-				none,
-			};
+		Bgm,
+		Custom,
+		Sfx,
+		None,
+	};
 
-			std::string	name;
-			std::string	path;
-			std::string	hash;
-			uint32_t	id;
-			Group		group;
-			uint16_t	version;
+	Sound()
+		: group{Group::None}
+		, id{0}
+		, version{0}
+	{ }
 
-			Sound()
-				: group(Group::none)
-				, id(0)
-				, version(0)
-			{ }
-
-			Sound(std::string	name,
-				  std::string	path,
-				  Group			group)
-				: name(name)
-				, path(path)
-				, id(0)
-				, group(group)
-				, version(0)
-			{
-				hash = path;
-			}
-		private:
-			friend class bitsery::Access;
-			template<typename S>
-			void serialize(S & s)
-			{
-				s.value2b(version);
-				s.text1b(name, 512);
-				s.text1b(path, 1024);
-				s.text1b(hash, 1024);
-				s.value4b(id);
-				s.value1b(group);
-			}
-		};
+	Sound(
+		std::string name,
+		std::string path,
+		Group group
+	)
+		: hash{path}
+		, name{name}
+		, path{path}
+		, id{0}
+		, group{group}
+		, version{0}
+	{}
+public:
+	std::string name;
+	std::string path;
+	std::string hash;
+	uint32_t id;
+	Group group;
+	uint16_t version;
+private:
+	friend class bitsery::Access;
+	template<typename S>
+	auto serialize(S & s)
+	{
+		s.value2b(version);
+		s.text1b(name, 512);
+		s.text1b(path, 1024);
+		s.text1b(hash, 1024);
+		s.value4b(id);
+		s.value1b(group);
 	}
+};
 }
 #endif // INCLUDE_GUARD

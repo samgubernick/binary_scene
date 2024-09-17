@@ -12,32 +12,29 @@
 #include <string>
 #include <vector>
 
-namespace sam
+namespace sam::binary_data {
+struct Sprite
 {
-	namespace binary_data
+public:
+	Sprite() : version{0} { }
+
+	Sprite(std::string name)
+		: name{name}
+		, version{0}
+	{ }
+public:
+	std::string name;
+	std::vector<Animation> animations;
+	uint16_t version;
+private:
+	friend class bitsery::Access;
+	template<typename S>
+	auto serialize(S & s)
 	{
-		struct Sprite
-		{
-			std::string name;
-			std::vector<Animation> animations;
-			uint16_t version;
-
-			Sprite() : version(0) { }
-
-			Sprite(std::string name)
-				: name(name)
-				, version(0)
-			{ }
-		private:
-			friend class bitsery::Access;
-			template<typename S>
-			void serialize(S & s)
-			{
-				s.value2b(version);
-				s.text1b(name, 512);
-				s.container(animations, 512);
-			}
-		};
+		s.value2b(version);
+		s.text1b(name, 512);
+		s.container(animations, 512);
 	}
+};
 }
 #endif // INCLUDE_GUARD

@@ -5,12 +5,15 @@
 
 #include <string>
 
-namespace sam
-{
-	namespace binary_data
-	{
-		bool is_match(std::string const & a, std::string const & b);
-		bool is_match(char a, char b);
-	}
+namespace sam::binary_data {
+auto is_match(
+	std::string const & a,
+	std::string const & b
+) -> bool;
+
+auto is_match(
+	char a,
+	char b
+) -> bool;
 }
 #endif // INCLUDE_GUARD

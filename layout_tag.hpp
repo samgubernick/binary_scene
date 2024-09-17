@@ -6,24 +6,23 @@
 // required for uint_8
 #include <cstdint>
 
-namespace sam { namespace binary_data
-{
+namespace sam::binary_data {
 enum class LayoutTag : uint8_t
 {
-	any,
-	balloon,
-	first,
-	game,
-	level,
-	levelSelect,
-	mainMenu,
-	mainMenuSub,
-	none,
-	options,
-	overlayTop,
-	popup,
-	popupGameControls,
-	inGameMenu,
+	Any,
+	Balloon,
+	First,
+	Game,
+	Level,
+	LevelSelect,
+	MainMenu,
+	MainMenuSub,
+	None,
+	Options,
+	OverlayTop,
+	Popup,
+	PopupGameControls,
+	InGameMenu,
 };
-}}
+}
 #endif // INCLUDE_GUARD

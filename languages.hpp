@@ -7,29 +7,28 @@
 #include "bitsery/serializer.h"
 #include "bitsery/traits/vector.h"
 
-namespace sam { namespace binary_data {
+namespace sam::binary_data {
 struct Languages
 {
-	std::vector<Language> list;
-	uint16_t	version;
-
 	Languages()
-		: version(0)
+		: version{0}
 	{}
 
 	Languages(std::vector<Language> list)
-		: list(list)
-		, version(0)
+		: list{list}
+		, version{0}
 	{}
+public:
+	std::vector<Language> list;
+	uint16_t version;
 private:
 	friend class bitsery::Access;
 	template<typename S>
-	void serialize(S & s)
+	auto serialize(S & s)
 	{
 		s.value2b(version);
 		s.container(list, 32);
 	}
 };
-}
 }
 #endif // INCLUDE_GUARD
