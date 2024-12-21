@@ -29,6 +29,7 @@ auto toString(option::ImageFormat imageFormat)
 		case option::ImageFormat::A: return "A";
 		case option::ImageFormat::L: return "L";
 		case option::ImageFormat::La: return "La";
+		case option::ImageFormat::Rg: return "Rg";
 		case option::ImageFormat::Rga: return "Rga";
 		case option::ImageFormat::Rgb: return "Rgb";
 		case option::ImageFormat::Rgba: return "Rgba";
@@ -102,6 +103,10 @@ auto Program::getImageFormat(std::string & imageFormat) -> option::ImageFormat
 	else if (is_match(imageFormat, "la"))
 	{
 		return option::ImageFormat::La;
+	}
+	else if (is_match(imageFormat, "rg"))
+	{
+		return option::ImageFormat::Rg;
 	}
 	else if (is_match(imageFormat, "rga"))
 	{
