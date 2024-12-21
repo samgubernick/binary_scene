@@ -22,6 +22,21 @@ constexpr auto const KEY_IMAGE_FORMAT = size_t{ 2 };
 constexpr auto const KEY_BEHAVIOR_X = size_t{ 3 };
 constexpr auto const KEY_BEHAVIOR_Y = size_t{ 4 };
 
+auto toString(option::ImageFormat imageFormat)
+{
+	switch (imageFormat)
+	{
+		case option::ImageFormat::A: return "A";
+		case option::ImageFormat::L: return "L";
+		case option::ImageFormat::La: return "La";
+		case option::ImageFormat::Rga: return "Rga";
+		case option::ImageFormat::Rgb: return "Rgb";
+		case option::ImageFormat::Rgba: return "Rgba";
+		case option::ImageFormat::Srgb: return "Srgb";
+		case option::ImageFormat::Srgba: return "Srgba";
+	}
+}
+
 auto isSpacer(char const & c)
 {
 	if (is_match(c, '\t')
@@ -109,7 +124,7 @@ auto Program::getImageFormat(std::string & imageFormat) -> option::ImageFormat
 		return option::ImageFormat::Srgba;
 	}
 
-	return option::ImageFormat::A;
+	return option::ImageFormat::Unknown;
 }
 
 auto Program::addTexture(std::string const & line, std::vector<Texture> & textures, size_t lineIndex) -> void
@@ -171,13 +186,17 @@ auto Program::addTexture(std::string const & line, std::vector<Texture> & textur
 
 	if (items.size() == 5)
 	{
-		auto options = Options(getBehavior(items.at(KEY_BEHAVIOR_X)),
-							   getBehavior(items.at(KEY_BEHAVIOR_Y)),
-							   getImageFormat(items.at(KEY_IMAGE_FORMAT)));
+		auto & texture =  textures.emplace_back(
+			items.at(KEY_NAME),
+			items.at(KEY_PATH),
+			Options{
+				getBehavior(items.at(KEY_BEHAVIOR_X)),
+				getBehavior(items.at(KEY_BEHAVIOR_Y)),
+				getImageFormat(items.at(KEY_IMAGE_FORMAT))
+			}
+		);
 
-		textures.emplace_back(items.at(KEY_NAME),
-							  items.at(KEY_PATH),
-							  std::move(options));
+		std::cout << "Texture: " << texture.name << ", image format: " << toString(texture.options.imageFormat) << std::endl;
 	}
 	else
 	{	// texture line isn't formatted correctly

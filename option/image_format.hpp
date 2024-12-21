@@ -6,14 +6,15 @@
 namespace sam::binary_data::option {
 enum class ImageFormat:uint8_t
 {
-	A,
-	L,
-	La,
-	Rga,
-	Rgb,
-	Rgba,
-	Srgb,
-	Srgba,
+	Unknown = 0,
+	A = 1,
+	L = 2,
+	La = 3,
+	Rga = 4,
+	Rgb = 5,
+	Rgba = 6,
+	Srgb = 7,
+	Srgba = 8,
 };
 }
 #endif // INCLUDE_GUARD
