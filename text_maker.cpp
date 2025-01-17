@@ -102,9 +102,9 @@ auto TextMaker::processStrings() -> int
 	std::cout << "Converting strings to binary data" << std::endl;
 	auto outputFilename = std::string();
 #ifdef ARCH_X64
-	auto const FILENAME = std::filesystem::path("../data/strings.bin");
+	auto const FILENAME = std::filesystem::path("../data/languages.bin");
 #elif defined ARCH_X86
-	auto const FILENAME = std::filesystem::path("../data_x86/strings.bin");
+	auto const FILENAME = std::filesystem::path("../data_x86/languages.bin");
 #endif // ARCH_X64
 	auto languages = Languages();
 	convertStrings(languages);
