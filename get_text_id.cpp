@@ -27,6 +27,7 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "customize") return Id::Customize;
 	if (name == "enterName") return Id::EnterName;
 	if (name == "example") return Id::Example;
+	if (name == "gameplay") return Id::Gameplay;
 	if (name == "loading") return Id::Loading;
 	if (name == "max") return Id::Max;
 	if (name == "maximum") return Id::Maximum;

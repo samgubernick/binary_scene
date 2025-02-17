@@ -34,6 +34,7 @@ enum class Id : uint8_t
 	Customize,
 	EnterName,
 	Example,
+	Gameplay,
 	Loading,
 	Max,
 	Maximum,
