@@ -4,7 +4,7 @@
 #pragma once
 
 namespace sam::binary_data::option {
-enum class Behavior : uint8_t
+enum class Behavior : int8_t
 {
 	Center,
 	Mirror,

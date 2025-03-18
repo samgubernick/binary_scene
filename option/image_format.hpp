@@ -4,7 +4,7 @@
 #pragma once
 
 namespace sam::binary_data::option {
-enum class ImageFormat:uint8_t
+enum class ImageFormat : int8_t
 {
 	Unknown = 0,
 	A = 1,

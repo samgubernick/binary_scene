@@ -29,7 +29,7 @@ public:
 	std::string name;
 	std::string text;
 	std::vector<String> strings;
-	uint32_t id;
+	int32_t id;
 	std::string hash;
 	uint16_t version;
 private:

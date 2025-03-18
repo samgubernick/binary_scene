@@ -7,7 +7,7 @@
 #include <cstdint>
 
 namespace sam::binary_data {
-enum class FaceName : uint8_t
+enum class FaceName : int8_t
 {
 	None,
 	Primary,

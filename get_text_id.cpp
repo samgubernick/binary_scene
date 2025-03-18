@@ -27,7 +27,6 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "customize") return Id::Customize;
 	if (name == "enterName") return Id::EnterName;
 	if (name == "example") return Id::Example;
-	if (name == "gameplay") return Id::Gameplay;
 	if (name == "loading") return Id::Loading;
 	if (name == "max") return Id::Max;
 	if (name == "maximum") return Id::Maximum;
@@ -74,6 +73,7 @@ auto getTextId(std::string const & name) -> Id
 	if (name == "forceFeedback") return Id::ForceFeedback;
 	if (name == "fullscreen") return Id::Fullscreen;
 	if (name == "gamepad") return Id::Gamepad;
+	if (name == "gameplay") return Id::Gameplay;
 	if (name == "hapticResponse") return Id::HapticResponse;
 	if (name == "inputDevice") return Id::InputDevice;
 	if (name == "keyboard") return Id::Keyboard;

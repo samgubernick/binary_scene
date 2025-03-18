@@ -7,7 +7,7 @@
 #include <cstdint>
 
 namespace sam::binary_data {
-enum class LayoutTag : uint8_t
+enum class LayoutTag : int8_t
 {
 	Any,
 	Balloon,

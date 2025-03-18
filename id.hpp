@@ -5,11 +5,10 @@
 
 #include <string>
 
-// required for uint_8
 #include <cstdint>
 
 namespace sam::binary_data {
-enum class Id : uint8_t
+enum class Id : int16_t
 {
 	None,
 	Exit,
@@ -34,7 +33,6 @@ enum class Id : uint8_t
 	Customize,
 	EnterName,
 	Example,
-	Gameplay,
 	Loading,
 	Max,
 	Maximum,
@@ -81,6 +79,7 @@ enum class Id : uint8_t
 	ForceFeedback,
 	Fullscreen,
 	Gamepad,
+	Gameplay,
 	HapticResponse,
 	InputDevice,
 	Keyboard,

@@ -25,7 +25,7 @@ public:
 	String(
 		std::string name,
 		FaceName faceName,
-		uint8_t faceSize,
+		int8_t faceSize,
 		std::string text,
 		Id id
 	)
@@ -39,7 +39,7 @@ public:
 	{}
 public:
 	FaceName faceName;
-	uint8_t faceSize;
+	int8_t faceSize;
 	std::string text;
 	std::string name;
 	Id id;
@@ -53,7 +53,7 @@ private:
 		s.value2b(version);
 		s.text1b(name, 512);
 		s.text1b(hash, 1024);
-		s.value1b(id);
+		s.value2b(id);
 		s.value1b(faceName);
 		s.value1b(faceSize);
 		s.text1b(text, 1024);

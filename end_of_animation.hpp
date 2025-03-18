@@ -4,7 +4,7 @@
 #pragma once
 
 namespace sam::binary_data {
-enum class EndOfAnimation : uint8_t
+enum class EndOfAnimation : int8_t
 {
 	Reset,
 	Reverse,

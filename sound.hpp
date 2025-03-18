@@ -6,17 +6,18 @@
 #include "bitsery/serializer.h"
 #include "bitsery/traits/string.h"
 
+#include <cstdint>
 #include <string>
 
 namespace sam::binary_data {
 struct Sound
 {
-	enum class Group:uint8_t
+	enum class Group : int8_t
 	{
+		None,
 		Bgm,
 		Custom,
 		Sfx,
-		None,
 	};
 
 	Sound()
@@ -41,7 +42,7 @@ public:
 	std::string name;
 	std::string path;
 	std::string hash;
-	uint32_t id;
+	int32_t id;
 	Group group;
 	uint16_t version;
 private:
